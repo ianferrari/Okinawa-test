@@ -1293,7 +1293,26 @@
     function toggleRainMode() { isRainyMode = !isRainyMode; localStorage.setItem('rainy_mode', isRainyMode); if(isRainyMode){document.body.classList.add('rainy-mode');document.getElementById('rain-text').innerText="雨天備案";}else{document.body.classList.remove('rainy-mode');document.getElementById('rain-text').innerText="晴天";} renderContent(); }
     window.toggleVoiceMemo = () => { if(!('webkitSpeechRecognition' in window)){alert("不支援");return;} const r = new webkitSpeechRecognition(); r.lang='zh-TW'; r.onstart=()=>showToast("🎙️ 請說話..."); r.onresult=e=>{const t=document.getElementById('diary-textarea'); if(t){t.value+="\n"+e.results[0][0].transcript; t.dispatchEvent(new Event('input'));}}; r.start(); }
     function checkGeofence(lat, lon) { missionsDB.forEach(m => { if(localStorage.getItem(m.id)!=='1' && !localStorage.getItem(m.id+'_notified')){ const d = Math.sqrt(Math.pow(lat-m.lat,2)+Math.pow(lon-m.lon,2))*111; if(d<0.5){ document.getElementById('geo-msg').innerText=`接近任務：${m.title}`; document.getElementById('geo-toast').classList.add('show'); localStorage.setItem(m.id+'_notified','1'); playSound('magic'); setTimeout(()=>document.getElementById('geo-toast').classList.remove('show'),5000); } } }); }
-
+	
+	// --- 補上遺失的每日檢查邏輯 ---
+    window.checkDailyItem = (cb) => {
+        const all = document.querySelectorAll('#daily-check-modal input[type="checkbox"]');
+        const checked = document.querySelectorAll('#daily-check-modal input[type="checkbox"]:checked');
+        const btn = document.getElementById('daily-check-btn');
+        
+        // 如果勾選數量等於總數量
+        if(all.length === checked.length) {
+            btn.disabled = false;
+            btn.classList.remove('bg-gray-300'); // 移除灰色
+            btn.classList.add('bg-blue-600', 'shadow-lg'); // 變回藍色
+        } else {
+            // 如果有人取消勾選，變回灰色
+            btn.disabled = true;
+            btn.classList.add('bg-gray-300');
+            btn.classList.remove('bg-blue-600', 'shadow-lg');
+        }
+    }
+	
     // Start
     init();
 </script>
