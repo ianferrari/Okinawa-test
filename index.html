@@ -1266,9 +1266,7 @@
             </div>`;
 
             // v18.0: 延遲載入地圖 (因為要等上面 innerHTML 渲染完，地圖容器出現後才能畫地圖)
-            setTimeout(initDayMap, 100);
-        }
-		
+            setTimeout(initDayMap, 100);		
         } else if (activeTab === 'checklist') {
             const list = checklistDB.find(c => c.id === currentChecklistFilter);
             main.innerHTML = `
@@ -1333,9 +1331,7 @@
             </div>`;
 
             // v18.0: 延遲載入照片 (因為要等 HTML 渲染完)
-            setTimeout(loadGallery, 100);
-        }
-		        
+            setTimeout(loadGallery, 100);		        
         } else if (activeTab === 'tools') {
             if (currentToolFilter === 'calc') {
                 let totalJPY = 0; 
