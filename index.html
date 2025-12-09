@@ -6,7 +6,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#0f172a">
-    <title>奎奎全家沖繩遊 🦕 V19.3 Final</title>
+    <title>奎奎全家沖繩遊 🦕 V19.4 FULL</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -14,44 +14,56 @@
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.3.0/model-viewer.min.js" defer></script>
 
     <style>
-        /* 基礎優化 */
+        /* [系統基礎] */
         body { font-family: 'Noto Sans TC', sans-serif; background-color: #0f172a; -webkit-tap-highlight-color: transparent; overscroll-behavior-y: none; -webkit-overflow-scrolling: touch; user-select: none; }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        /* 玻璃質感與卡片 */
+        /* [V19 視覺核心] */
         .glass { background: rgba(255, 255, 255, 0.92); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid rgba(255, 255, 255, 0.5); }
         .glass-dark { background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.15); color: white; }
-        .glass-card { background: rgba(255, 255, 255, 0.95); box-shadow: 0 4px 20px rgba(0,0,0,0.08); border: 1px solid rgba(255, 255, 255, 0.6); }
+        .glass-card { background: rgba(255, 255, 255, 0.95); box-shadow: 0 8px 32px rgba(0,0,0,0.1); border: 1px solid rgba(255, 255, 255, 0.6); }
 
-        /* 行程時間軸 */
+        /* [V17 功能復刻：行程時間軸] */
         .event-card-container { padding-bottom: 24px; position: relative; }
         .event-card-container:last-child { padding-bottom: 10px; }
         .timeline-connector { position: absolute; left: 2.25rem; bottom: 0; height: 100%; width: 2px; border-left: 2px dashed #cbd5e1; z-index: 0; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 5px; }
         .event-card-container:last-child .timeline-connector { display: none; }
-        .travel-pill { background-color: #f1f5f9; border: 1px solid #cbd5e1; color: #64748b; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 99px; white-space: nowrap; z-index: 10; margin-bottom: 5px; }
+        .travel-pill { background-color: #f1f5f9; border: 1px solid #cbd5e1; color: #64748b; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 99px; white-space: nowrap; z-index: 10; margin-bottom: 5px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
 
-        /* V17 圓餅圖與動畫復刻 */
-        .pie-chart { width: 140px; height: 140px; border-radius: 50%; position: relative; margin: 0 auto; box-shadow: inset 0 0 20px rgba(0,0,0,0.1); }
-        .pie-chart::after { content: ""; position: absolute; width: 80px; height: 80px; background: white; border-radius: 50%; top: 50%; left: 50%; transform: translate(-50%, -50%); box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        /* [V17 功能復刻：隨身尺規] */
+        .ruler-container { background: #fff; overflow-x: auto; overflow-y: hidden; white-space: nowrap; position: relative; box-shadow: inset 0 0 20px rgba(0,0,0,0.1); border-radius: 8px; border: 1px solid #e2e8f0; height: 100px; display: flex; align-items: flex-end; padding-left: 20px; padding-right: 20px; }
+        .ruler-tick { width: 1px; background: #334155; display: inline-block; flex-shrink: 0; position: relative; }
+        .ruler-tick.major { height: 40px; width: 2px; background: #0f172a; }
+        .ruler-tick.medium { height: 30px; opacity: 0.8; }
+        .ruler-tick.minor { height: 20px; opacity: 0.6; }
+        .ruler-num { position: absolute; top: -25px; left: -10px; width: 20px; text-align: center; font-size: 12px; font-weight: bold; }
+
+        /* [動畫特效] */
         @keyframes pop { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes shake { 0% { transform: rotate(0deg); } 25% { transform: rotate(5deg); } 75% { transform: rotate(-5deg); } 100% { transform: rotate(0deg); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
         .animate-pop { animation: pop 0.3s ease-in-out; }
-        .animate-slide-up { animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .animate-shake { animation: shake 0.3s ease-in-out 3; }
+        .animate-slide-up { animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 
-        /* UI 狀態 */
+        /* [UI 狀態] */
         .tab-active { background: rgba(255, 255, 255, 0.95); color: #2563eb; transform: scale(1.05); box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
         .tab-inactive { background: rgba(0, 0, 0, 0.3); color: rgba(255, 255, 255, 0.7); }
+        body.rainy-mode #bg-layer { filter: grayscale(80%) brightness(0.6); }
+        body.rainy-mode .glass-card { border-left: 4px solid #60a5fa !important; }
         .pt-safe-top { padding-top: max(20px, env(safe-area-inset-top)); }
         .pb-safe-bottom { padding-bottom: max(20px, env(safe-area-inset-bottom)); }
         
-        /* 彈窗 */
+        /* [彈窗與提示] */
         .modal { display: none; z-index: 9999; }
         .modal.open { display: flex !important; }
         #toast { visibility: hidden; min-width: 200px; transform: translateX(-50%); background-color: rgba(30, 41, 59, 0.95); color: #fff; text-align: center; border-radius: 50px; padding: 12px 24px; position: fixed; z-index: 10000; left: 50%; bottom: 120px; font-size: 14px; backdrop-filter: blur(8px); opacity: 0; transition: opacity 0.3s, bottom 0.3s; pointer-events: none; }
         #toast.show { visibility: visible; opacity: 1; bottom: 130px; }
-        
-        /* 修正相機 */
+        #geo-toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); padding: 15px 25px; border-radius: 50px; z-index: 9999; display: flex; align-items: center; gap: 15px; transition: transform 0.5s; border: 2px solid #fbbf24; width: 90%; max-width: 350px; }
+        #geo-toast.show { transform: translateX(-50%) translateY(0); }
+
+        /* [相機] */
         .cam-viewport { position: relative; overflow: hidden; background: #000; border-radius: 1.5rem; aspect-ratio: 3/4; width: 100%; }
         #camera-video { width: 100%; height: 100%; object-fit: cover; }
     </style>
@@ -92,129 +104,266 @@
 
     <button onclick="openQuickExpense()" class="fixed bottom-[100px] right-4 w-14 h-14 bg-pink-500 rounded-full text-white shadow-2xl flex items-center justify-center z-40 active:scale-90 transition-transform border-4 border-white/20 backdrop-blur"><i class="fas fa-plus text-2xl"></i></button>
 
-    <div id="driver-hud" class="fixed inset-0 bg-black z-[200] hidden flex-col p-6 text-white font-mono modal">
-        <div class="flex justify-between items-center mb-4 pt-safe-top">
-            <div class="flex flex-col"><span class="text-xs text-gray-500 tracking-widest">TIME</span><span id="hud-clock" class="text-2xl font-bold">--:--</span></div>
-            <button onclick="closeDriverMode()" class="w-10 h-10 rounded-full bg-red-900/30 text-red-500 flex items-center justify-center"><i class="fas fa-power-off"></i></button>
-        </div>
-        <div class="flex flex-col items-center text-center relative mb-4">
-            <h1 id="hud-title" class="text-3xl font-black text-white truncate px-2 mb-4">載入中...</h1>
-            <div class="text-[9px] text-gray-500 tracking-[0.2em] mb-1">MAPCODE</div>
-            <div id="hud-mapcode" class="text-4xl font-black text-yellow-400 tracking-wider font-mono mb-6" onclick="copyHudMapCode()">--- ---</div>
-            <div class="flex gap-4 w-full justify-center">
-                 <button onclick="changeHudEvent(-1)" class="w-16 h-16 rounded-2xl border border-gray-800 bg-gray-900 flex items-center justify-center"><i class="fas fa-chevron-left"></i></button>
-                 <a id="hud-nav-btn" href="#" target="_blank" class="flex-1 bg-blue-600 text-white text-xl font-black py-4 rounded-xl flex items-center justify-center gap-2"><i class="fas fa-location-arrow"></i> GO</a>
-                 <button onclick="changeHudEvent(1)" class="w-16 h-16 rounded-2xl border border-gray-800 bg-gray-900 flex items-center justify-center"><i class="fas fa-chevron-right"></i></button>
+    <div id="toast"><i class="fas fa-check-circle mr-2 text-green-400"></i><span id="toast-msg">已複製</span></div>
+    <div id="geo-toast"><div class="w-10 h-10 rounded-full bg-yellow-400 flex items-center justify-center text-xl text-yellow-900 animate-bounce"><i class="fas fa-map-marker-alt"></i></div><div><div class="text-[10px] font-bold text-gray-400 uppercase">MISSION UNLOCKED</div><div id="geo-msg" class="font-bold text-gray-800 text-sm">抵達目的地！</div></div></div>
+
+    <div id="driver-hud" class="fixed inset-0 bg-black z-[200] hidden flex-col p-6 text-white font-mono modal"></div>
+    <div id="expense-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-end justify-center p-0 sm:p-6 hidden modal" onclick="closeQuickExpense()"></div>
+    <div id="gift-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden modal" onclick="closeGiftModal()"></div>
+    <div id="hunt-modal" class="fixed inset-0 bg-yellow-50 flex flex-col hidden animate-slide-up modal"></div>
+    <div id="voice-modal" class="fixed inset-0 bg-slate-900 flex flex-col items-center justify-center hidden text-white modal"></div>
+    <div id="spot-modal" class="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-end justify-center p-0 sm:p-6 hidden modal" onclick="document.getElementById('spot-modal').classList.remove('open')"></div>
+    <div id="camera-modal" class="fixed inset-0 bg-black hidden modal flex-col"></div>
+    <div id="sos-card-modal" class="fixed inset-0 bg-red-600 flex flex-col items-center justify-center p-6 text-white hidden text-center animate-pop modal"></div>
+    <div id="ruler-modal" class="fixed inset-0 z-[150] bg-white flex flex-col hidden animate-slide-up modal"></div>
+    <div id="drawing-modal" class="fixed inset-0 z-[200] bg-white flex flex-col hidden modal"></div>
+    <div id="dr-dino-modal" class="fixed inset-0 bg-white flex flex-col hidden animate-slide-up modal"></div>
+    <div id="gasha-modal" class="fixed inset-0 z-[100] bg-black/90 backdrop-blur-md flex items-center justify-center p-6 flex-col hidden modal" onclick="closeGashaModal()"></div>
+    <div id="daily-check-modal" class="fixed inset-0 z-[150] bg-blue-900/90 backdrop-blur-md flex items-center justify-center p-6 hidden modal"></div>
+	<body class="h-screen flex flex-col text-gray-800 overflow-hidden relative">
+    <div id="bg-layer" class="absolute inset-0 z-0 bg-cover bg-center transition-all duration-700 transform scale-105" 
+         style="background-image: url('https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800');">
+        <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-black/10 to-slate-100/90"></div>
+    </div>
+
+    <div class="z-10 pt-safe-top px-5 pb-2 flex-shrink-0">
+        <div class="flex justify-between items-start pt-6 mb-2 text-white">
+            <div class="flex-1 mr-2">
+                <div class="flex items-center gap-2 mb-1">
+                    <span class="bg-blue-600 px-2 py-0.5 rounded-md text-[10px] font-bold tracking-wider uppercase shadow-lg border border-blue-400/30">2026 TRIP</span>
+                    <div id="countdown" class="text-[10px] font-mono font-medium opacity-90 bg-black/40 px-2 py-0.5 rounded-md backdrop-blur-sm border border-white/10">計算中...</div>
+                </div>
+                <h1 class="text-3xl font-black tracking-tight drop-shadow-lg leading-tight">奎奎全家<br>沖繩遊 🦕</h1>
+            </div>
+            
+            <div class="flex flex-col items-end gap-2">
+                <div class="flex gap-2">
+                    <button onclick="toggleRainMode()" id="rain-btn" class="glass-dark px-3 py-2 rounded-2xl text-center shadow-lg min-w-[50px] active:scale-95 transition-all border border-white/20">
+                        <i id="rain-icon" class="fas fa-sun text-xl mb-1 block text-yellow-400"></i>
+                        <span id="rain-text" class="text-[9px] font-bold opacity-90">晴天</span>
+                    </button>
+                    <div class="glass-dark px-3 py-2 rounded-2xl text-center shadow-lg min-w-[70px] active:scale-95 transition-transform cursor-pointer" onclick="initWeather()">
+                        <i id="weather-icon" class="fas fa-spinner fa-spin text-xl mb-1 block text-blue-300"></i>
+                        <span id="weather-temp" class="text-sm font-bold">...</span>
+                        <div id="weather-loc" class="text-[9px] opacity-70 mt-0.5">重整</div>
+                    </div>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="toggleVoiceMemo()" class="glass-dark w-10 h-10 rounded-full flex items-center justify-center active:bg-pink-500 transition-colors border border-white/20">
+                         <i class="fas fa-microphone text-white text-sm"></i>
+                    </button>
+                </div>
             </div>
         </div>
-        <div class="flex-1 flex flex-col justify-center items-center">
-            <div class="text-xs text-gray-500 font-bold tracking-widest">SPEED</div>
-            <div class="text-[8rem] font-black text-white leading-none" id="hud-speed">0</div>
-            <div class="text-xl text-gray-500 font-bold">km/h</div>
+        <div id="sub-nav-container" class="mt-2 min-h-[44px]"></div>
+    </div>
+    
+    <div id="main-scroll" class="flex-1 overflow-y-auto p-4 pb-32 z-10 scroll-smooth rounded-t-[2.5rem] bg-slate-50 shadow-[0_-10px_40px_rgba(0,0,0,0.15)] relative top-2">
+    </div>
+
+    <div class="fixed bottom-0 w-full glass flex justify-around items-center pb-safe-bottom h-[85px] z-50 rounded-t-[2rem] shadow-[0_-5px_20px_rgba(0,0,0,0.05)]">
+        <button onclick="switchTab('itinerary')" class="nav-btn flex flex-col items-center justify-center w-full h-full group" id="btn-itinerary">
+            <div class="icon-box p-2 rounded-2xl mb-1"><i class="fas fa-map-location-dot text-xl text-blue-600"></i></div>
+            <span class="text-[10px] font-bold text-blue-600">行程</span>
+        </button>
+        <button onclick="switchTab('checklist')" class="nav-btn flex flex-col items-center justify-center w-full h-full group" id="btn-checklist">
+            <div class="icon-box p-2 rounded-2xl mb-1"><i class="fas fa-clipboard-list text-xl text-gray-400"></i></div>
+            <span class="text-[10px] font-bold text-gray-400">清單</span>
+        </button>
+        <button onclick="switchTab('missions')" class="nav-btn flex flex-col items-center justify-center w-full h-full group" id="btn-missions">
+            <div class="icon-box p-2 rounded-2xl mb-1"><i class="fas fa-medal text-xl text-gray-400"></i></div>
+            <span class="text-[10px] font-bold text-gray-400">成就</span>
+        </button>
+        <button onclick="switchTab('tools')" class="nav-btn flex flex-col items-center justify-center w-full h-full group" id="btn-tools">
+            <div class="icon-box p-2 rounded-2xl mb-1"><i class="fas fa-toolbox text-xl text-gray-400"></i></div>
+            <span class="text-[10px] font-bold text-gray-400">工具</span>
+        </button>
+    </div>
+
+    <button onclick="openQuickExpense()" class="fixed bottom-[100px] right-4 w-14 h-14 bg-pink-500 rounded-full text-white shadow-2xl flex items-center justify-center z-40 active:scale-90 transition-transform border-4 border-white/20 backdrop-blur group">
+        <i class="fas fa-plus text-2xl group-active:rotate-90 transition-transform"></i>
+    </button>
+
+    <div id="expense-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-6 hidden modal" onclick="closeQuickExpense()">
+        <div class="bg-white w-full max-w-sm rounded-t-3xl sm:rounded-3xl p-6 shadow-2xl relative animate-slide-up" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-black text-gray-800"><i class="fas fa-bolt text-yellow-400 mr-2"></i>快速記帳</h3>
+                <button onclick="closeQuickExpense()" class="w-8 h-8 rounded-full bg-gray-100 text-gray-400 flex items-center justify-center"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="space-y-4">
+                <div class="flex gap-2 overflow-x-auto hide-scrollbar pb-2">
+                    <label class="cursor-pointer"><input type="radio" name="quick-cat" value="shopping" class="peer sr-only" checked><div class="bg-slate-50 border border-slate-200 px-3 py-2 rounded-xl text-xs text-gray-500 peer-checked:bg-pink-500 peer-checked:text-white transition-all font-bold whitespace-nowrap"><i class="fas fa-bag-shopping"></i> 購物</div></label>
+                    <label class="cursor-pointer"><input type="radio" name="quick-cat" value="food" class="peer sr-only"><div class="bg-slate-50 border border-slate-200 px-3 py-2 rounded-xl text-xs text-gray-500 peer-checked:bg-orange-500 peer-checked:text-white transition-all font-bold whitespace-nowrap"><i class="fas fa-utensils"></i> 餐飲</div></label>
+                    <label class="cursor-pointer"><input type="radio" name="quick-cat" value="play" class="peer sr-only"><div class="bg-slate-50 border border-slate-200 px-3 py-2 rounded-xl text-xs text-gray-500 peer-checked:bg-purple-500 peer-checked:text-white transition-all font-bold whitespace-nowrap"><i class="fas fa-ticket"></i> 娛樂</div></label>
+                    <label class="cursor-pointer"><input type="radio" name="quick-cat" value="transport" class="peer sr-only"><div class="bg-slate-50 border border-slate-200 px-3 py-2 rounded-xl text-xs text-gray-500 peer-checked:bg-blue-500 peer-checked:text-white transition-all font-bold whitespace-nowrap"><i class="fas fa-car"></i> 交通</div></label>
+                </div>
+                <input id="quickExName" type="text" placeholder="品項名稱 (如: 冰淇淋)" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-base focus:outline-pink-500 min-w-0">
+                <div class="relative">
+                    <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold">¥</span>
+                    <input id="quickExPrice" type="number" placeholder="金額" class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-8 pr-4 py-3 text-xl font-black text-gray-800 focus:outline-pink-500 min-w-0">
+                </div>
+                <button onclick="saveQuickExpense()" class="w-full bg-pink-500 text-white font-bold py-4 rounded-xl shadow-lg active:scale-[0.98] transition-transform text-lg mt-2"><i class="fas fa-check mr-2"></i> 儲存這筆</button>
+            </div>
         </div>
+    </div>
+
+    <div id="sos-card-modal" class="fixed inset-0 bg-red-600 flex flex-col items-center justify-center p-6 text-white hidden text-center animate-pop modal">
+        <button onclick="closeSosCard()" class="absolute top-6 right-6 text-white/70 text-4xl hover:text-white pt-safe-top"><i class="fas fa-times-circle"></i></button>
+        <div class="mb-8 animate-pulse"><i class="fas fa-exclamation-triangle text-6xl text-yellow-300"></i></div>
+        <div class="text-xl font-bold mb-2 opacity-80">我是台灣人，請幫助我</div>
+        <h2 id="sos-jp-text" class="text-4xl sm:text-5xl font-black leading-tight mb-4 bg-white text-red-600 p-4 rounded-xl shadow-xl w-full select-all">助けてください</h2>
+        <p id="sos-sub-text" class="text-lg font-bold opacity-90">Please help me.</p>
+        <div class="grid grid-cols-2 gap-4 w-full mt-10">
+            <button onclick="setSosMsg('sick')" class="bg-white/20 border-2 border-white/40 p-4 rounded-xl font-bold active:bg-white/40 transition-colors">小孩生病<br>子供が病気</button>
+            <button onclick="setSosMsg('lost')" class="bg-white/20 border-2 border-white/40 p-4 rounded-xl font-bold active:bg-white/40 transition-colors">迷路了<br>迷子です</button>
+            <button onclick="setSosMsg('police')" class="bg-white/20 border-2 border-white/40 p-4 rounded-xl font-bold active:bg-white/40 transition-colors">報警<br>警察を呼んで</button>
+            <button onclick="setSosMsg('ambulance')" class="bg-white/20 border-2 border-white/40 p-4 rounded-xl font-bold active:bg-white/40 transition-colors">叫救護車<br>救急車！</button>
+        </div>
+    </div>
+
+    <div id="gift-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden modal" onclick="closeGiftModal()">
+        <div class="bg-white w-full max-w-sm rounded-3xl p-5 shadow-2xl relative h-[70vh] flex flex-col" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center mb-4 pb-4 border-b">
+                <h3 class="text-lg font-black text-gray-800"><i class="fas fa-gift text-red-500 mr-2"></i>伴手禮清單</h3>
+                <button onclick="closeGiftModal()" class="w-8 h-8 rounded-full bg-gray-100 text-gray-400 flex items-center justify-center"><i class="fas fa-times"></i></button>
+            </div>
+            <div id="gift-list-container" class="flex-1 overflow-y-auto space-y-2 mb-4 hide-scrollbar"></div>
+            <div class="border-t pt-4 space-y-3">
+                <input id="gift-who" type="text" placeholder="對象 (如: 阿嬤)" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-red-500 font-bold min-w-0">
+                <input id="gift-what" type="text" placeholder="要買什麼?" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-red-500 min-w-0">
+                <div class="flex gap-2">
+                    <input id="gift-budget" type="number" placeholder="預算(¥)" class="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-red-500 min-w-0">
+                    <button onclick="addGift()" class="bg-red-500 text-white font-bold px-6 py-2 rounded-xl shadow-lg active:scale-95 whitespace-nowrap"><i class="fas fa-plus mr-1"></i> 新增</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="voice-modal" class="fixed inset-0 bg-slate-900 flex flex-col items-center justify-center hidden text-white modal">
+        <button onclick="document.getElementById('voice-modal').classList.remove('open')" class="absolute top-6 right-6 w-10 h-10 rounded-full bg-white/10 flex items-center justify-center pt-safe-top"><i class="fas fa-times"></i></button>
+        <div class="text-center mb-10">
+            <div class="text-6xl mb-4 animate-bounce">🦖</div>
+            <h3 class="text-2xl font-black text-green-400">DINO VOICE</h3>
+            <p class="text-gray-400 text-sm">按住按鈕說話，變身霸王龍！</p>
+        </div>
+        <div id="voice-visualizer" class="h-16 flex items-center justify-center gap-1 mb-10 opacity-0 transition-opacity"><div class="voice-bar"></div><div class="voice-bar"></div><div class="voice-bar"></div></div>
+        <button id="voice-record-btn" class="w-24 h-24 rounded-full bg-red-500 border-4 border-red-700 shadow-[0_0_30px_rgba(239,68,68,0.5)] flex items-center justify-center active:scale-90 transition-transform relative overflow-hidden group">
+            <i class="fas fa-microphone text-4xl z-10"></i>
+        </button>
+    </div>
+
+    <div id="dr-dino-modal" class="fixed inset-0 bg-white flex flex-col hidden animate-slide-up modal">
+        <div class="bg-red-50 p-6 rounded-b-[2rem] shadow-sm text-center pt-safe-top">
+            <div class="flex justify-between items-start mb-2">
+                <div class="w-8"></div>
+                <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center text-3xl shadow-sm mx-auto mb-2">👨‍⚕️</div>
+                <button onclick="document.getElementById('dr-dino-modal').classList.remove('open')" class="w-8 h-8 rounded-full bg-white text-red-400 flex items-center justify-center"><i class="fas fa-times"></i></button>
+            </div>
+            <h3 class="text-xl font-black text-red-600">Dr. Dino 痛痛翻譯</h3>
+            <p class="text-xs text-red-400">點擊部位，幫你說出症狀</p>
+        </div>
+        <div class="flex-1 p-6 overflow-y-auto">
+            <div class="grid grid-cols-2 gap-4" id="symptom-grid"></div>
+        </div>
+    </div>
+
+    <div id="driver-hud" class="fixed inset-0 bg-black z-[200] hidden flex-col p-6 text-white font-mono modal"></div>
+    <div id="hunt-modal" class="fixed inset-0 bg-yellow-50 flex flex-col hidden animate-slide-up modal"></div>
+    <div id="spot-modal" class="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-end justify-center p-0 sm:p-6 hidden modal" onclick="document.getElementById('spot-modal').classList.remove('open')"></div>
+    <div id="camera-modal" class="fixed inset-0 bg-black hidden modal flex-col"></div>
+    <div id="ruler-modal" class="fixed inset-0 z-[150] bg-white flex flex-col hidden animate-slide-up modal"></div>
+    <div id="drawing-modal" class="fixed inset-0 z-[200] bg-white flex flex-col hidden modal"></div>
+    <div id="gasha-modal" class="fixed inset-0 z-[100] bg-black/90 backdrop-blur-md flex items-center justify-center p-6 flex-col hidden modal" onclick="closeGashaModal()"></div>
+    <div id="daily-check-modal" class="fixed inset-0 z-[150] bg-blue-900/90 backdrop-blur-md flex items-center justify-center p-6 hidden modal"></div>
+    <div id="ar-modal" class="fixed inset-0 bg-black flex flex-col hidden modal">
+        <button onclick="closeAR()" class="absolute top-safe-top right-4 z-20 text-white bg-black/50 px-4 py-2 rounded-full text-xs font-bold backdrop-blur">關閉 AR</button>
+        <model-viewer src="https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Velociraptor/glTF-Binary/Velociraptor.glb" ar ar-modes="webxr scene-viewer quick-look" camera-controls auto-rotate shadow-intensity="1" class="w-full h-full"></model-viewer>
     </div>
 
     <div id="toast"><i class="fas fa-check-circle mr-2 text-green-400"></i><span id="toast-msg">已複製</span></div>
-    
-    <div id="expense-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-end justify-center p-0 sm:p-6 hidden modal" onclick="closeQuickExpense()">
-        <div class="bg-white w-full max-w-sm rounded-t-3xl sm:rounded-3xl p-6 shadow-2xl animate-slide-up" onclick="event.stopPropagation()">
-            <div class="flex justify-between items-center mb-4"><h3 class="text-xl font-black text-gray-800">快速記帳</h3><button onclick="closeQuickExpense()" class="w-8 h-8 bg-gray-100 rounded-full text-gray-400"><i class="fas fa-times"></i></button></div>
-            <div class="flex gap-2 overflow-x-auto hide-scrollbar mb-4">
-                <label class="cursor-pointer"><input type="radio" name="quick-cat" value="shopping" class="peer sr-only" checked><div class="bg-slate-50 border px-3 py-2 rounded-xl text-xs font-bold peer-checked:bg-pink-500 peer-checked:text-white">購物</div></label>
-                <label class="cursor-pointer"><input type="radio" name="quick-cat" value="food" class="peer sr-only"><div class="bg-slate-50 border px-3 py-2 rounded-xl text-xs font-bold peer-checked:bg-orange-500 peer-checked:text-white">餐飲</div></label>
-                <label class="cursor-pointer"><input type="radio" name="quick-cat" value="transport" class="peer sr-only"><div class="bg-slate-50 border px-3 py-2 rounded-xl text-xs font-bold peer-checked:bg-blue-500 peer-checked:text-white">交通</div></label>
-            </div>
-            <input id="quickExName" type="text" placeholder="品項名稱" class="w-full bg-slate-50 border rounded-xl px-4 py-3 mb-2 font-bold">
-            <input id="quickExPrice" type="number" placeholder="¥ 金額" class="w-full bg-slate-50 border rounded-xl px-4 py-3 mb-4 text-xl font-bold">
-            <button onclick="saveQuickExpense()" class="w-full bg-pink-500 text-white font-bold py-4 rounded-xl shadow-lg">儲存這筆</button>
-        </div>
-    </div>
-
-    <div id="hunt-modal" class="fixed inset-0 bg-yellow-50 flex flex-col hidden animate-slide-up modal">
-        <div class="p-4 flex justify-between pt-safe-top"><h3 class="font-black text-yellow-800">尋寶獵人</h3><button onclick="document.getElementById('hunt-modal').classList.remove('open')"><i class="fas fa-times"></i></button></div>
-        <div class="p-4 grid grid-cols-2 gap-4" id="hunt-grid"></div>
-        <div class="p-4"><button onclick="resetHunt()" class="w-full bg-yellow-200 py-3 rounded-xl text-yellow-800 font-bold text-sm">重置</button></div>
-    </div>
-    
-    <div id="voice-modal" class="fixed inset-0 bg-slate-900 flex flex-col items-center justify-center hidden text-white modal">
-        <button onclick="document.getElementById('voice-modal').classList.remove('open')" class="absolute top-6 right-6 pt-safe-top"><i class="fas fa-times"></i></button>
-        <div class="text-6xl mb-4 animate-bounce">🦖</div>
-        <h3 class="text-2xl font-black text-green-400">DINO VOICE</h3>
-        <button class="mt-8 w-24 h-24 rounded-full bg-red-500 flex items-center justify-center active:scale-90 transition-transform"><i class="fas fa-microphone text-4xl"></i></button>
-    </div>
-
-    <div id="spot-modal" class="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-end justify-center p-0 sm:p-6 hidden modal" onclick="document.getElementById('spot-modal').classList.remove('open')">
-        <div class="bg-white w-full max-w-sm rounded-t-3xl sm:rounded-3xl h-[80vh] flex flex-col animate-slide-up" onclick="event.stopPropagation()">
-            <div id="spot-hero" class="h-[200px] bg-cover bg-center rounded-t-3xl relative flex-shrink-0">
-                <button onclick="document.getElementById('spot-modal').classList.remove('open')" class="absolute top-4 right-4 bg-black/30 text-white w-8 h-8 rounded-full flex items-center justify-center backdrop-blur"><i class="fas fa-times"></i></button>
-                <div class="absolute bottom-4 left-4 text-white"><h3 id="spot-title" class="text-2xl font-black drop-shadow-md"></h3></div>
-            </div>
-            <div class="p-6 overflow-y-auto flex-1"><p id="spot-desc" class="text-gray-600 text-sm mb-4"></p><div class="bg-blue-50 p-4 rounded-xl mb-4"><div class="text-xs font-bold text-blue-500 mb-1">Tips</div><p id="spot-tips" class="text-sm font-bold text-gray-800"></p></div><a id="spot-nav-btn" href="#" target="_blank" class="block w-full bg-blue-600 text-white text-center font-bold py-3 rounded-xl">導航</a></div>
-        </div>
-    </div>
-
-    <div id="camera-modal" class="fixed inset-0 bg-black hidden modal flex-col">
-        <div class="flex justify-between p-4 pt-safe-top z-10"><button onclick="toggleCameraFacing()" class="text-white"><i class="fas fa-sync"></i></button><button onclick="document.getElementById('camera-modal').classList.remove('open')" class="text-white"><i class="fas fa-times"></i></button></div>
-        <div class="flex-1 flex items-center justify-center relative"><div class="cam-viewport"><video id="camera-video" autoplay playsinline muted></video><canvas id="camera-canvas" class="hidden"></canvas><div id="cam-overlay" class="absolute inset-0 pointer-events-none"><div class="cam-badge">DAY <span id="cam-day-val">1</span></div><div class="cam-overlay-text"><div class="cam-date" id="cam-date-val">2026/03/28</div><div class="cam-loc">Okinawa</div></div></div></div></div>
-        <div class="h-24 flex items-center justify-center bg-black pb-safe-bottom"><button onclick="takePhoto()" class="w-16 h-16 rounded-full bg-white border-4 border-gray-300"></button></div>
-    </div>
+    <div id="geo-toast"><div class="w-10 h-10 rounded-full bg-yellow-400 flex items-center justify-center text-xl text-yellow-900 animate-bounce"><i class="fas fa-map-marker-alt"></i></div><div><div class="text-[10px] font-bold text-gray-400 uppercase">MISSION UNLOCKED</div><div id="geo-msg" class="font-bold text-gray-800 text-sm">抵達目的地！</div></div></div>
 
     <script>
+    // ================= [Part 2] 資料庫 (DATA DATABASE) =================
+    // 這裡包含了所有行程、景點、工具的詳細資料，完全還原 V17
+    
     const TRIP_YEAR = 2026;
     let activeTab = 'itinerary';
     let currentDayIdx = 0;
     let currentChecklistFilter = 'pack';
     let currentToolFilter = 'drive'; 
     let isRainyMode = localStorage.getItem('rainy_mode') === 'true';
+    
+    // User Data
     let expenses = JSON.parse(localStorage.getItem('trip_expenses')) || [];
     let taxBasket = [];
     let giftDB = JSON.parse(localStorage.getItem('trip_gifts')) || [];
+    let medicalData = JSON.parse(localStorage.getItem('medical_data')) || { name: "", phone: "", hotel: "", allergies: [] };
     let parkingData = JSON.parse(localStorage.getItem('parking_data')) || null;
     let gashaCoinsUsed = localStorage.getItem('gasha_coins_used') ? parseInt(localStorage.getItem('gasha_coins_used')) : 0;
     let huntProgress = JSON.parse(localStorage.getItem('hunt_progress')) || { h1: false, h2: false, h3: false, h4: false };
+    let savedRate = localStorage.getItem('user_rate');
+    let CURRENT_RATE = savedRate ? parseFloat(savedRate) : 0.2150;
+    let TOTAL_BUDGET = localStorage.getItem('trip_budget') ? parseInt(localStorage.getItem('trip_budget')) : 100000;
+
+    // --- 資料庫定義 ---
     
-    // DB
+    // 1. 背景圖 (Backgrounds)
+    const bgImages = { 
+        D1: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800", 
+        D2: "https://images.unsplash.com/photo-1582967788606-a171f1080ca8?w=800", 
+        D3: "https://images.unsplash.com/photo-1560275619-4662e36fa65c?w=800",
+        D4: "https://images.unsplash.com/photo-1518709766631-a6a7f45921c3?w=800",
+        D5: "https://images.unsplash.com/photo-1534234828569-2f2249520468?w=800",
+        D6: "https://images.unsplash.com/photo-1472851294608-415522f96319?w=800",
+        D7: "https://images.unsplash.com/photo-1542051841857-5f90071e7989?w=800",
+        SHOP: "https://images.unsplash.com/photo-1472851294608-415522f96319?w=800",
+        MISSION: "https://images.unsplash.com/photo-1533227297464-9429738d1964?w=800",
+        TOOL: "https://images.unsplash.com/photo-1484417894907-623942c8ee29?w=800"
+    };
+
+    // 2. 完整行程 (Itinerary) - 含 MapCode 與 Duration
     const itineraryDB = [
-        { day: "D1", date: "3/28 (六)", title: "啟程 & 適應", highlights: "機場買奶 / OTS取車", bg: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800", events: [
+        { day: "D1", date: "3/28 (六)", title: "啟程 & 適應", highlights: "機場買奶 / OTS取車", bg: bgImages.D1, events: [
             { time: "09:00", title: "從家裡出發", icon: "fa-house", note: "檢查護照帶了沒？", duration: "1h", travel: "🚗 40分" },
-            { time: "10:00", title: "抵達機場", spotId: "tpe_airport", icon: "fa-plane-departure", note: "辦理托運。", duration: "3h", travel: "✈️ 等待" },
+            { time: "10:00", title: "抵達機場", spotId: "tpe_airport", icon: "fa-plane-departure", note: "辦理托運。推車推到登機口。", duration: "3h", travel: "✈️ 等待" },
             { time: "13:15", title: "星宇 JX302 起飛", icon: "fa-paper-plane", note: "給奎奎吃軟糖平衡耳壓。", duration: "2.5h", travel: "✈️ 飛行" },
-            { time: "15:45", title: "抵達那霸機場", spotId: "oka_airport", icon: "fa-plane-arrival", note: "入境、拿行李。", duration: "1h", travel: "🚶 步行" },
+            { time: "15:45", title: "抵達那霸機場", spotId: "oka_airport", icon: "fa-plane-arrival", note: "入境、拿行李、過稅關。", duration: "1h", travel: "🚶 步行" },
             { time: "17:00", title: "OTS 取車", spotId: "ots_rent", icon: "fa-car", note: "MapCode: 232 543 502*09", mapcode: "232 543 502*09", lat: 26.1558, lon: 127.6534, duration: "1h", travel: "🚗 60分" },
             { time: "19:30", title: "飯店 Check-in", spotId: "hotel_nago", icon: "fa-hotel", note: "Best Western 名護。", mapcode: "206 473 354*11", lat: 26.5414, lon: 127.9458 }
         ]},
-        { day: "D2", date: "3/29 (日)", title: "名護探險", highlights: "玻璃船 / AEON / 玩沙", bg: "https://images.unsplash.com/photo-1582967788606-a171f1080ca8?w=800", events: [
+        { day: "D2", date: "3/29 (日)", title: "名護探險", highlights: "玻璃船 / AEON / 玩沙", bg: bgImages.D2, events: [
             { time: "09:00", title: "飯店早餐", icon: "fa-mug-hot", note: "享受海景早餐。", duration: "1h", travel: "🚗 20分" },
-            { time: "10:00", title: "部瀨名海中公園", spotId: "busena", icon: "fa-ship", note: "搭玻璃船看尼莫！", mapcode: "206 442 077*71", lat: 26.5278, lon: 127.9306, duration: "1.5h", travel: "🚗 20分" },
-            { time: "12:00", title: "午餐：HAMA壽司", icon: "fa-bowl-rice", note: "名護店，平板點餐。", duration: "1h", travel: "🚗 10分" },
-            { time: "13:30", title: "AEON 名護店", icon: "fa-cart-shopping", note: "大創買玩具、超市補給。", mapcode: "206 626 669*52", duration: "2h", travel: "🚗 15分" },
+            { time: "10:00", title: "部瀨名海中公園", spotId: "busena", icon: "fa-ship", note: "搭玻璃船看尼莫！(海中展望塔)", mapcode: "206 442 077*71", lat: 26.5278, lon: 127.9306, duration: "1.5h", travel: "🚗 20分" },
+            { time: "12:00", title: "午餐：HAMA壽司", icon: "fa-bowl-rice", note: "名護店，平板點餐。", mapcode: "206 626 342*22", duration: "1h", travel: "🚗 10分" },
+            { time: "13:30", title: "AEON 名護店", spotId: "aeon_nago", icon: "fa-cart-shopping", note: "大創買玩具、超市補給。", mapcode: "206 626 669*52", duration: "2h", travel: "🚗 15分" },
             { time: "16:00", title: "飯店沙灘玩沙", spotId: "hotel_nago", icon: "fa-umbrella-beach", note: "拿出剛買的挖沙組。" }
         ]},
-        { day: "D3", date: "3/30 (一)", title: "海洋與大橋", highlights: "美麗海 / 古宇利島", bg: "https://images.unsplash.com/photo-1560275619-4662e36fa65c?w=800", events: [
+        { day: "D3", date: "3/30 (一)", title: "海洋與大橋", highlights: "美麗海 / 古宇利島", bg: bgImages.D3, events: [
             { time: "09:30", title: "美麗海水族館", spotId: "churaumi", icon: "fa-fish", note: "停 P7 停車場。看鯨鯊餵食秀。", mapcode: "553 075 797*77", lat: 26.6943, lon: 127.8779, duration: "3h", travel: "🚗 40分" },
             { time: "13:30", title: "古宇利大橋", icon: "fa-bridge-water", note: "絕美古宇利藍。", travel: "🚗 5分" },
-            { time: "14:30", title: "古宇利海洋塔", icon: "fa-tower-observation", note: "搭無人鳳梨車上山。", duration: "1.5h" },
-            { time: "18:00", title: "晚餐：燒肉乃我那霸", icon: "fa-fire-burner", note: "名護新館，吃阿古豬。", duration: "2h" }
+            { time: "14:30", title: "古宇利海洋塔", icon: "fa-tower-observation", note: "搭無人鳳梨車上山。", mapcode: "485 693 485*06", duration: "1.5h" },
+            { time: "18:00", title: "晚餐：燒肉乃我那霸", icon: "fa-fire-burner", note: "名護新館，吃阿古豬。", mapcode: "206 626 210*55", duration: "2h" }
         ]},
-        { day: "D4", date: "3/31 (二)", title: "恐龍與森林", highlights: "DINO Park / 甜甜圈", bg: "https://images.unsplash.com/photo-1518709766631-a6a7f45921c3?w=800", events: [
-            { time: "10:00", title: "DINO 恐龍 PARK", spotId: "dino", icon: "fa-dragon", note: "找 80 隻恐龍！", mapcode: "206 745 056*82", lat: 26.6267, lon: 127.9620, duration: "1.5h", travel: "🚗 5分" },
+        { day: "D4", date: "3/31 (二)", title: "恐龍與森林", highlights: "DINO Park / 甜甜圈", bg: bgImages.D4, events: [
+            { time: "10:00", title: "DINO 恐龍 PARK", spotId: "dino", icon: "fa-dragon", note: "找 80 隻恐龍！(御菓子御殿旁)", mapcode: "206 745 056*82", lat: 26.6267, lon: 127.9620, duration: "1.5h", travel: "🚗 5分" },
             { time: "11:30", title: "午餐：御菓子御殿", icon: "fa-utensils", note: "就在恐龍公園樓上。", duration: "1h" },
-            { time: "13:00", title: "島豆腐甜甜圈", icon: "fa-cookie-bite", note: "買回車上吃，健康好吃。", duration: "30m", travel: "🚗 5分" },
+            { time: "13:00", title: "島豆腐甜甜圈", icon: "fa-cookie-bite", note: "買回車上吃，健康好吃。", mapcode: "206 625 352*71", duration: "30m", travel: "🚗 5分" },
             { time: "15:00", title: "21世紀之森公園", icon: "fa-train", note: "大溜滑梯放電。", mapcode: "206 626 779*74", duration: "1.5h" }
         ]},
-        { day: "D5", date: "4/01 (三)", title: "動物與放空", highlights: "Neo Park / 飯店泳池", bg: "https://images.unsplash.com/photo-1534234828569-2f2249520468?w=800", events: [
+        { day: "D5", date: "4/01 (三)", title: "動物與放空", highlights: "Neo Park / 飯店泳池", bg: bgImages.D5, events: [
             { time: "10:00", title: "Neo Park 動植物園", icon: "fa-crow", note: "搭復古小火車看鳥。", mapcode: "206 689 725*11", lat: 26.5986, lon: 127.9733, duration: "2.5h" },
             { time: "14:00", title: "回飯店午睡", spotId: "hotel_nago", icon: "fa-bed", note: "休息一下。", duration: "2h" },
             { time: "16:00", title: "飯店泳池/沙灘", icon: "fa-water", note: "最後一天玩水。", duration: "2h" },
-            { time: "18:00", title: "晚餐：大家 Ufuya", icon: "fa-house-user", note: "百年古宅吃火鍋 (已預約)。", duration: "2h" }
+            { time: "18:00", title: "晚餐：大家 Ufuya", icon: "fa-house-user", note: "百年古宅吃火鍋 (已預約)。", mapcode: "206 745 056*66", duration: "2h" }
         ]},
-        { day: "D6", date: "4/02 (四)", title: "購物與移動", highlights: "PARCO CITY / 國際通", bg: "https://images.unsplash.com/photo-1472851294608-415522f96319?w=800", events: [
+        { day: "D6", date: "4/02 (四)", title: "購物與移動", highlights: "PARCO CITY / 國際通", bg: bgImages.D6, events: [
             { time: "10:30", title: "退房往南", icon: "fa-suitcase-rolling", note: "行李全上車。", travel: "🚗 60分" },
             { time: "11:30", title: "PARCO CITY", spotId: "parco", icon: "fa-bag-shopping", note: "午餐 & 購物 (Uniqlo/阿卡將)。", mapcode: "33 339 062*55", duration: "3h", travel: "🚗 30分" },
             { time: "16:00", title: "那霸 Check-in", icon: "fa-hotel", note: "Daiwa Roynet 國際通。", lat: 26.2163, lon: 127.6917, duration: "1h" },
             { time: "18:00", title: "國際通逛街", icon: "fa-street-view", note: "晚餐 & 買伴手禮。", duration: "2h" }
         ]},
-        { day: "D7", date: "4/03 (五)", title: "祈福與返家", highlights: "波上宮 / Outlet", bg: "https://images.unsplash.com/photo-1542051841857-5f90071e7989?w=800", events: [
+        { day: "D7", date: "4/03 (五)", title: "祈福與返家", highlights: "波上宮 / Outlet", bg: bgImages.D7, events: [
             { time: "09:20", title: "波上宮", spotId: "naminoue", icon: "fa-torii-gate", note: "買書包御守。", lat: 26.2206, lon: 127.6713, duration: "1h", travel: "🚗 40分" },
             { time: "11:10", title: "ASHIBINAA Outlet", icon: "fa-shirt", note: "最後衝刺 & 午餐。", mapcode: "232 544 452*22", duration: "1.5h", travel: "🚗 20分" },
             { time: "13:00", title: "OTS 還車", icon: "fa-gas-pump", note: "記得加滿油！", lat: 26.1558, lon: 127.6534, duration: "1h", travel: "🚌 接駁" },
@@ -222,25 +371,43 @@
             { time: "16:45", title: "起飛返台", icon: "fa-paper-plane", note: "回家囉！" }
         ]}
     ];
-    const checklistDB = [
-        { id: "pack", title: "🎒 行前打包", items: [{text: "護照"}, {text: "駕照+譯本"}, {text: "充電器"}, {text: "尿布/奶粉"}, {text: "玩沙工具"}] },
-        { id: "shop", title: "🛍️ 購物必買", items: [{text: "合利他命"}, {text: "若元錠"}, {text: "大創泡澡球"}, {text: "蝦餅"}] },
-        { id: "return", title: "🚨 回程防呆", items: [{text: "ETC卡拔了嗎?"}, {text: "護照?"}, {text: "加滿油?"}] }
-    ];
+
+    // 3. 景點詳細資料 (Spot Info)
     const spotInfoDB = {
         "tpe_airport": { title: "台中國際機場", image: "https://images.unsplash.com/photo-1570710891163-6d3b5c47248b?w=800", desc: "旅程起點！", tips: "帶小孩走優先通道。", map: "台中國際機場" },
-        "ots_rent": { title: "OTS 臨空豐崎", image: "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=800", desc: "取車與買票。", tips: "檢查 ETC 卡。", map: "OTS 臨空豐崎營業所" },
-        "busena": { title: "海中公園", image: "https://images.unsplash.com/photo-1682687220742-aba13b6e50ba?w=800", desc: "搭玻璃船看魚。", tips: "風大會停駛。", map: "部瀨名海中公園" },
-        "churaumi": { title: "美麗海水族館", image: "https://images.unsplash.com/photo-1582967788606-a171f1080ca8?w=800", desc: "黑潮之海。", tips: "15:00 餵食秀。", map: "沖繩美麗海水族館" },
-        "dino": { title: "DINO PARK", image: "https://images.unsplash.com/photo-1518709766631-a6a7f45921c3?w=800", desc: "恐龍森林。", tips: "建議用揹巾。", map: "DINO恐龍PARK" },
-        "parco": { title: "PARCO CITY", image: "https://images.unsplash.com/photo-1472851294608-415522f96319?w=800", desc: "最大商場。", tips: "停車場記得拍照。", map: "PARCO CITY" }
+        "ots_rent": { title: "OTS 臨空豐崎", image: "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=800", desc: "取車與買票。", tips: "檢查 ETC 卡與安全座椅。", map: "OTS 臨空豐崎營業所" },
+        "hotel_nago": { title: "Best Western 名護", image: "https://images.unsplash.com/photo-1590523277543-a94d2e4eb00b?w=800", desc: "無敵海景飯店。", tips: "樓下就有便利商店。", map: "Best Western Okinawa Kouki Beach" },
+        "busena": { title: "海中公園", image: "https://images.unsplash.com/photo-1682687220742-aba13b6e50ba?w=800", desc: "搭玻璃船看魚。", tips: "風大會停駛，先看官網。", map: "部瀨名海中公園" },
+        "churaumi": { title: "美麗海水族館", image: "https://images.unsplash.com/photo-1582967788606-a171f1080ca8?w=800", desc: "黑潮之海鯨鯊。", tips: "15:00 餵食秀必看！", map: "沖繩美麗海水族館" },
+        "dino": { title: "DINO PARK", image: "https://images.unsplash.com/photo-1518709766631-a6a7f45921c3?w=800", desc: "恐龍森林。", tips: "路不平，建議用揹巾。", map: "DINO恐龍PARK" },
+        "aeon_nago": { title: "AEON 名護店", image: "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=800", desc: "超市與大創。", tips: "買水、尿布、煙火。", map: "AEON 名護店" },
+        "parco": { title: "PARCO CITY", image: "https://images.unsplash.com/photo-1472851294608-415522f96319?w=800", desc: "最大商場。", tips: "停車場很大，記得拍照。", map: "SAN-A 浦添西海岸 PARCO CITY" },
+        "naminoue": { title: "波上宮", image: "https://images.unsplash.com/photo-1599464402636-6c2438883e1c?w=800", desc: "懸崖上的神社。", tips: "去橋上拍照最美。", map: "波上宮" }
     };
-    const foodBoardDB = [{name:"沖繩麵", img:"https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Okinawa_soba.jpg/640px-Okinawa_soba.jpg", jp:"沖縄そば"},{name:"塔可飯", img:"https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Taco_rice.jpg/640px-Taco_rice.jpg", jp:"タコライス"},{name:"炸豬排", img:"https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/Tonkatsu.jpg/640px-Tonkatsu.jpg", jp:"とんかつ"},{name:"炒飯", img:"https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Fried_rice_with_egg%2C_shrimp%2C_and_scallion.jpg/640px-Fried_rice_with_egg%2C_shrimp%2C_and_scallion.jpg", jp:"チャーハン"}];
+
+    // 4. 清單與其他資料庫
+    const checklistDB = [
+        { id: "pack", title: "🎒 行前打包", items: [{text: "護照 (3本)"}, {text: "駕照+譯本"}, {text: "充電器"}, {text: "尿布/奶粉"}, {text: "玩沙工具"}, {text: "常備藥品"}] },
+        { id: "shop", title: "🛍️ 購物必買", items: [{text: "合利他命"}, {text: "若元錠"}, {text: "大創泡澡球"}, {text: "蝦餅"}, {text: "吹風機"}, {text: "EVE止痛藥"}] },
+        { id: "return", title: "🚨 回程防呆", items: [{text: "ETC卡拔了嗎?"}, {text: "加滿油了嗎?"}, {text: "護照在身上?"}, {text: "垃圾清空?"}, {text: "Wifi機還了?"}] }
+    ];
+    
     const huntDB = [{id:"h1",name:"販賣機",icon:"🥤"},{id:"h2",name:"風獅爺",icon:"🦁"},{id:"h3",name:"黃車牌",icon:"🚙"},{id:"h4",name:"全家",icon:"🏪"}];
-    const missionsDB = [{id:"m1",title:"我是船長",desc:"搭玻璃船",icon:"fa-ship"},{id:"m2",title:"海洋霸主",desc:"跟鯨鯊合照",icon:"fa-camera"},{id:"m3",title:"小小勇者",desc:"找恐龍",icon:"fa-dragon"},{id:"m4",title:"誠心祈福",desc:"去神社",icon:"fa-torii-gate"}];
+    const symptomDB = [{icon:"🤕",label:"發燒",jp:"熱があります",speak:"Netsu ga arimasu"},{icon:"🤮",label:"想吐",jp:"吐き気がします",speak:"Hakike ga shimasu"},{icon:"🦵",label:"受傷",jp:"怪我をしました",speak:"Kega o shimashita"},{icon:"🤧",label:"感冒",jp:"風邪気味です",speak:"Kaze gimi desu"}];
+    const missionsDB = [{id:"m1",title:"我是船長",desc:"搭玻璃船",icon:"fa-ship",lat:26.5278,lon:127.9306},{id:"m2",title:"海洋霸主",desc:"跟鯨鯊合照",icon:"fa-camera",lat:26.6943,lon:127.8779},{id:"m3",title:"小小勇者",desc:"找恐龍",icon:"fa-dragon",lat:26.6267,lon:127.9620},{id:"m4",title:"誠心祈福",desc:"去神社",icon:"fa-torii-gate",lat:26.2206,lon:127.6713}];
+    const foodBoardDB = [{name:"沖繩麵", img:"https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Okinawa_soba.jpg/640px-Okinawa_soba.jpg", jp:"沖縄そば"},{name:"塔可飯", img:"https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Taco_rice.jpg/640px-Taco_rice.jpg", jp:"タコライス"},{name:"炸豬排", img:"https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/Tonkatsu.jpg/640px-Tonkatsu.jpg", jp:"とんかつ"},{name:"炒飯", img:"https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Fried_rice_with_egg%2C_shrimp%2C_and_scallion.jpg/640px-Fried_rice_with_egg%2C_shrimp%2C_and_scallion.jpg", jp:"チャーハン"},{name:"兒童餐", img:"https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Okosama_lunch_by_kawanet.jpg/640px-Okosama_lunch_by_kawanet.jpg", jp:"お子様セット"},{name:"冰水", img:"https://upload.wikimedia.org/wikipedia/commons/thumb/d/d5/Glass_of_water.jpg/480px-Glass_of_water.jpg", jp:"お水"}];
+    
+    const toolsDB = {
+        drive: [{title:"右駕口訣",content:"左轉小彎、右轉大彎",color:"bg-blue-50 text-blue-800"},{title:"加油金句",content:"Regular 滿油 (紅槍)",color:"bg-orange-50 text-orange-800"}],
+        sos: [{name:"救護車/火警",tel:"119",style:"bg-red-500 text-white"},{name:"報警",tel:"110",style:"bg-blue-600 text-white"},{name:"OTS 租車",tel:"098-856-8877",style:"bg-green-600 text-white"}],
+        jp: [{label:"🍽️ 餐廳",items:[{t:"請給我水",j:"お水をください"},{t:"我要結帳",j:"お会計をお願いします"}]},{label:"🛍️ 購物",items:[{t:"可以試穿嗎?",j:"試着できますか?"},{t:"有新的嗎?",j:"新しいのはありますか?"}]}]
+    };
+    const sosMessages = { sick: { jp: "子供が病気です", en: "Child is sick" }, lost: { jp: "道に迷いました", en: "I am lost" }, police: { jp: "警察を呼んで", en: "Call police" }, ambulance: { jp: "救急車！", en: "Call Ambulance" } };
+    const defaultRewards = [{ icon: "🍬", text: "軟糖一顆" }, { icon: "📺", text: "看卡通10分" }, { icon: "🧸", text: "買一個玩具" }, { icon: "🍦", text: "吃冰淇淋" }];
+    let rewardsDB = JSON.parse(localStorage.getItem('gasha_rewards')) || [...defaultRewards];
     </script>
 	<script>
-    // ================= [Part 2] 核心邏輯 (LOGIC CORE) =================
+    // ================= [Part 3] 核心邏輯 (SYSTEM LOGIC) =================
 
     // 1. 初始化與系統啟動
     function init() {
@@ -252,7 +419,8 @@
             const now = new Date();
             const start = new Date(`${TRIP_YEAR}-03-28T09:00:00`);
             const diff = start - now;
-            document.getElementById('countdown').innerText = diff > 0 ? `還有 ${Math.floor(diff/86400000)} 天` : '旅程中 ✈️';
+            const cdEl = document.getElementById('countdown');
+            if(cdEl) cdEl.innerText = diff > 0 ? `還有 ${Math.floor(diff/86400000)} 天` : '旅程中 ✈️';
             
             // HUD 時鐘更新
             const timeStr = `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
@@ -261,23 +429,38 @@
         }, 1000);
         
         initWeather();
+        checkDailyPopup(); // V17 功能: 每日出門檢查
     }
 
-    // 2. 天氣系統
+    // 2. 天氣與 GPS 系統
     function initWeather() {
-        // 優先抓取 GPS，失敗則預設名護市座標
-        if(navigator.geolocation) navigator.geolocation.getCurrentPosition(p => fetchWeather(p.coords.latitude, p.coords.longitude), () => fetchWeather(26.59, 127.97));
-        else fetchWeather(26.59, 127.97);
+        if(navigator.geolocation) {
+            navigator.geolocation.watchPosition(
+                p => {
+                    // 更新天氣
+                    fetchWeather(p.coords.latitude, p.coords.longitude);
+                    // 更新 HUD 速度
+                    const speed = p.coords.speed ? Math.round(p.coords.speed * 3.6) : 0;
+                    const hudSpeed = document.getElementById('hud-speed');
+                    if(hudSpeed) hudSpeed.innerText = speed;
+                    // V17 功能: 地理圍欄檢查
+                    checkGeofence(p.coords.latitude, p.coords.longitude);
+                }, 
+                () => fetchWeather(26.59, 127.97),
+                { enableHighAccuracy: true }
+            );
+        } else {
+            fetchWeather(26.59, 127.97);
+        }
     }
     
     async function fetchWeather(lat, lon) {
         try {
             const r = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`);
             const d = await r.json();
-            document.getElementById('weather-temp').innerText = Math.round(d.current_weather.temperature) + "°C";
-        } catch(e) {
-            console.log("Weather error");
-        }
+            const el = document.getElementById('weather-temp');
+            if(el) el.innerText = Math.round(d.current_weather.temperature) + "°C";
+        } catch(e) {}
     }
 
     // 3. 頁面切換系統
@@ -286,32 +469,28 @@
         // 更新底部按鈕樣式
         document.querySelectorAll('.nav-btn').forEach(b => {
             const i = b.querySelector('i'), s = b.querySelector('span');
-            // Reset colors
-            i.className = i.className.replace('text-blue-600','text-gray-400');
-            s.className = s.className.replace('text-blue-600','text-gray-400');
-            
-            // Set active color
             if(b.id === `btn-${tab}`) { 
                 i.className = i.className.replace('text-gray-400','text-blue-600'); 
                 s.className = s.className.replace('text-gray-400','text-blue-600'); 
+            } else {
+                i.className = i.className.replace('text-blue-600','text-gray-400'); 
+                s.className = s.className.replace('text-blue-600','text-gray-400'); 
             }
         });
         renderHeaderSubNav(); 
         renderContent();
     }
 
-    // 4. 頂部次選單渲染 (包含新增的 'Money' 按鈕)
+    // 4. 頂部次選單渲染
     function renderHeaderSubNav() {
         const c = document.getElementById('sub-nav-container');
         if(activeTab === 'itinerary') {
-            // 顯示日期按鈕
             c.innerHTML = `<div class="flex overflow-x-auto gap-3 pb-2 hide-scrollbar px-2">${itineraryDB.map((d,i)=>`<button onclick="currentDayIdx=${i};renderContent();renderHeaderSubNav()" class="flex-shrink-0 px-4 py-2 rounded-full text-sm font-bold backdrop-blur-md transition-all ${i===currentDayIdx?'tab-active':'tab-inactive'}">${d.date.split(' ')[0]}</button>`).join('')}</div>`;
         } else if(activeTab === 'checklist') {
-            // 顯示清單分類
             c.innerHTML = `<div class="flex glass-dark p-1 rounded-2xl mx-1">${checklistDB.map(l=>`<button onclick="currentChecklistFilter='${l.id}';renderContent();renderHeaderSubNav()" class="flex-1 py-2 rounded-xl text-xs font-bold transition-all ${currentChecklistFilter===l.id?'bg-white text-blue-600':'text-white/80'}">${l.title.split(' ')[1]}</button>`).join('')}</div>`;
         } else if(activeTab === 'tools') {
-            // 顯示工具分類 (新增 Money)
-            c.innerHTML = `<div class="flex glass-dark p-1 rounded-2xl mx-1 gap-1 overflow-x-auto hide-scrollbar"><button onclick="switchTool('drive')" class="flex-1 py-2 px-3 rounded-xl text-xs font-bold whitespace-nowrap ${currentToolFilter==='drive'?'bg-white text-blue-600':'text-white/80'}">🚗 駕駛</button><button onclick="switchTool('eat')" class="flex-1 py-2 px-3 rounded-xl text-xs font-bold whitespace-nowrap ${currentToolFilter==='eat'?'bg-white text-orange-600':'text-white/80'}">🍱 吃喝</button><button onclick="switchTool('money')" class="flex-1 py-2 px-3 rounded-xl text-xs font-bold whitespace-nowrap ${currentToolFilter==='money'?'bg-white text-green-600':'text-white/80'}">💰 錢包</button><button onclick="switchTool('fun')" class="flex-1 py-2 px-3 rounded-xl text-xs font-bold whitespace-nowrap ${currentToolFilter==='fun'?'bg-white text-yellow-600':'text-white/80'}">🦖 娛樂</button></div>`;
+            // 包含 "錢包 (Money)" 按鈕
+            c.innerHTML = `<div class="flex glass-dark p-1 rounded-2xl mx-1 gap-1 overflow-x-auto hide-scrollbar"><button onclick="switchTool('drive')" class="flex-1 py-2 px-3 rounded-xl text-xs font-bold whitespace-nowrap ${currentToolFilter==='drive'?'bg-white text-blue-600':'text-white/80'}">🚗 駕駛</button><button onclick="switchTool('eat')" class="flex-1 py-2 px-3 rounded-xl text-xs font-bold whitespace-nowrap ${currentToolFilter==='eat'?'bg-white text-orange-600':'text-white/80'}">🍱 吃喝</button><button onclick="switchTool('money')" class="flex-1 py-2 px-3 rounded-xl text-xs font-bold whitespace-nowrap ${currentToolFilter==='money'?'bg-white text-green-600':'text-white/80'}">💰 錢包</button><button onclick="switchTool('fun')" class="flex-1 py-2 px-3 rounded-xl text-xs font-bold whitespace-nowrap ${currentToolFilter==='fun'?'bg-white text-yellow-600':'text-white/80'}">🦖 娛樂</button><button onclick="switchTool('safe')" class="flex-1 py-2 px-3 rounded-xl text-xs font-bold whitespace-nowrap ${currentToolFilter==='safe'?'bg-white text-red-600':'text-white/80'}">🛡️ 安全</button></div>`;
         } else {
             c.innerHTML = "";
         }
@@ -322,60 +501,56 @@
     function renderContent() {
         const main = document.getElementById('main-scroll');
         
-        // --- A. 行程 ---
+        // --- A. 行程 (Itinerary) ---
         if(activeTab === 'itinerary') {
             const d = itineraryDB[currentDayIdx];
             main.innerHTML = `<div class="animate-slide-up tab-content"><div class="glass-card rounded-3xl p-5 mb-6 border-l-4 border-blue-500"><h2 class="text-xl font-bold text-gray-800 mb-1">${d.date} ${d.title}</h2><div class="text-sm text-gray-500"><i class="fas fa-star text-yellow-500 mr-1"></i> ${d.highlights}</div></div><div class="space-y-4 px-1">${d.events.map((e,i)=>{
                 const isLast = i === d.events.length -1;
-                // V17 時間軸邏輯
                 return `<div class="relative group event-card-container"><div class="flex gap-4 relative z-10"><div class="flex flex-col items-center min-w-[3.5rem]"><div class="w-14 h-14 rounded-2xl bg-white border border-slate-200 text-blue-600 flex items-center justify-center text-xl shadow-sm z-10"><i class="fas ${e.icon}"></i></div></div><div class="flex-1 bg-white p-4 rounded-2xl shadow-sm border border-slate-100 active:scale-[0.98] transition-transform" ${e.spotId?`onclick="openSpotModal('${e.spotId}')"`:''}><div class="flex justify-between items-start mb-1"><h3 class="font-bold text-gray-800 text-lg">${e.time} ${e.title}</h3>${e.mapcode?`<button onclick="event.stopPropagation();copyMapCode('${e.mapcode}')" class="text-[10px] bg-yellow-100 text-yellow-700 px-2 py-1 rounded border border-yellow-200 font-bold">MAPCODE</button>`:''}</div>${e.note?`<p class="text-xs text-gray-500 bg-slate-50 p-2 rounded-lg mb-1">${e.note}</p>`:''}${e.duration?`<span class="text-[10px] bg-pink-100 text-pink-600 px-2 py-0.5 rounded font-bold"><i class="fas fa-clock mr-1"></i>停留 ${e.duration}</span>`:''}</div></div>${(e.travel&&!isLast)?`<div class="timeline-connector"><div class="travel-pill">${e.travel}</div></div>`:'<div class="timeline-connector" style="border:none"></div>'}</div>`
             }).join('')}</div><div class="h-24"></div></div>`;
         } 
         
-        // --- B. 清單 ---
+        // --- B. 清單 (Checklist) ---
         else if(activeTab === 'checklist') {
             const list = checklistDB.find(c => c.id === currentChecklistFilter);
             main.innerHTML = `<div class="animate-slide-up glass-card rounded-3xl p-6 min-h-[60vh] tab-content"><h3 class="font-bold text-xl mb-4 text-gray-800 border-b pb-4">${list.title}</h3><div class="space-y-3">${list.items.map((item,i)=>{
                 const key = `chk_${currentChecklistFilter}_${item.text}`; const isC = localStorage.getItem(key)==='1';
                 return `<label class="flex items-center gap-3 p-3 rounded-2xl bg-white border border-slate-100 shadow-sm transition-all"><input type="checkbox" class="w-6 h-6 rounded-lg text-blue-600" ${isC?'checked':''} onchange="localStorage.setItem('${key}','${isC?'0':'1'}');renderContent()"><div class="flex-1 font-bold ${isC?'text-gray-400 line-through':'text-gray-700'}">${item.text}</div></label>`;
-            }).join('')}</div></div>`;
+            }).join('')}</div><div class="mt-6 flex gap-2"><button onclick="addChecklistItem()" class="flex-1 py-3 border-2 border-dashed border-gray-300 rounded-xl text-gray-400 font-bold">新增</button><button onclick="openGiftModal()" class="flex-1 py-3 bg-red-50 text-red-500 rounded-xl font-bold">伴手禮</button></div></div>`;
         } 
         
-        // --- C. 成就 (扭蛋機) ---
+        // --- C. 成就 (Missions/Gasha) ---
         else if(activeTab === 'missions') {
             let bal = 0; missionsDB.forEach(m=>{if(localStorage.getItem(m.id)==='1')bal++}); bal-=gashaCoinsUsed;
             main.innerHTML = `<div class="animate-slide-up space-y-4 tab-content"><div class="glass-card rounded-3xl p-6 text-center border-4 border-pink-400 bg-pink-50"><h3 class="text-xl font-black text-pink-600 mb-2">🎉 快樂扭蛋機</h3><div class="text-4xl font-black text-gray-800 mb-2">${bal<0?0:bal} <span class="text-sm">枚代幣</span></div><button onclick="spinGasha()" ${bal<=0?'disabled':''} class="w-full py-4 rounded-2xl font-bold text-lg shadow-lg ${bal>0?'bg-pink-500 text-white':'bg-gray-200 text-gray-400'}">投入代幣</button></div><div class="grid grid-cols-2 gap-4">${missionsDB.map(m=>{const d=localStorage.getItem(m.id)==='1';return `<div onclick="if(!${d}){localStorage.setItem('${m.id}','1');showToast('任務完成！');renderContent()}" class="glass-card rounded-3xl p-4 text-center ${d?'border-2 border-yellow-400 bg-yellow-50':'grayscale opacity-80'}"><div class="text-4xl mb-2"><i class="fas ${m.icon}"></i></div><div class="font-bold">${m.title}</div></div>`}).join('')}</div></div>`;
         } 
         
-        // --- D. 工具 ---
+        // --- D. 工具 (Tools) ---
         else if(activeTab === 'tools') {
             if(currentToolFilter === 'drive') {
-                // 駕駛儀表板 + 找廁所/超商
-                main.innerHTML = `<div class="animate-slide-up space-y-4 tab-content"><button onclick="document.getElementById('driver-hud').classList.remove('hidden');document.getElementById('driver-hud').classList.add('flex');updateHUD()" class="w-full bg-slate-800 text-white p-6 rounded-3xl shadow-xl text-left"><h3 class="text-2xl font-black italic">DRIVER HUD</h3><p class="text-sm text-gray-300">駕駛儀表板</p></button>${parkingData?`<div class="bg-green-100 p-3 rounded-xl flex justify-between items-center text-green-800 font-bold"><span>🅿️ ${parkingData.note}</span><button onclick="parkingData=null;localStorage.removeItem('parking_data');renderContent()"><i class="fas fa-times"></i></button></div>`:`<button onclick="const n=prompt('位置');if(n){parkingData={note:n};localStorage.setItem('parking_data',JSON.stringify(parkingData));renderContent()}" class="w-full bg-white border border-dashed py-3 rounded-xl font-bold text-gray-400">記錄停車</button>`}<div class="grid grid-cols-2 gap-2"><button onclick="window.open('https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(\'toilets\')}')" class="bg-white p-4 rounded-2xl font-bold text-blue-600 shadow-sm">找廁所</button><button onclick="window.open('https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(\'Lawson\')}')" class="bg-white p-4 rounded-2xl font-bold text-orange-600 shadow-sm">找超商</button></div></div>`;
+                // 駕駛: HUD + 找廁所/超商 + 停車
+                main.innerHTML = `<div class="animate-slide-up space-y-4 tab-content"><button onclick="document.getElementById('driver-hud').classList.remove('hidden');document.getElementById('driver-hud').classList.add('flex');updateHUD()" class="w-full bg-slate-800 text-white p-6 rounded-3xl shadow-xl text-left"><h3 class="text-2xl font-black italic">DRIVER HUD</h3><p class="text-sm text-gray-300">駕駛儀表板</p></button>${parkingData?`<div class="bg-green-100 p-3 rounded-xl flex justify-between items-center text-green-800 font-bold"><span>🅿️ ${parkingData.note}</span><button onclick="parkingData=null;localStorage.removeItem('parking_data');renderContent()"><i class="fas fa-times"></i></button></div>`:`<button onclick="saveParking()" class="w-full bg-white border border-dashed py-3 rounded-xl font-bold text-gray-400">記錄停車</button>`}<div class="grid grid-cols-2 gap-2"><button onclick="quickSearch('toilets')" class="bg-white p-4 rounded-2xl font-bold text-blue-600 shadow-sm">找廁所</button><button onclick="quickSearch('Lawson')" class="bg-white p-4 rounded-2xl font-bold text-orange-600 shadow-sm">找超商</button><button onclick="goBackHotel()" class="bg-white p-4 rounded-2xl font-bold text-purple-600 shadow-sm">回飯店</button><button onclick="quickSearch('Gas Station')" class="bg-white p-4 rounded-2xl font-bold text-red-600 shadow-sm">找加油</button></div></div>`;
             } else if(currentToolFilter === 'eat') {
-                // 美食指指通
                 main.innerHTML = `<div class="animate-slide-up space-y-4 tab-content"><div class="bg-orange-50 border border-orange-200 rounded-3xl p-5"><h3 class="text-lg font-black text-orange-800 mb-4">手指點餐通</h3><div class="grid grid-cols-2 gap-3">${foodBoardDB.map(f=>`<div class="bg-white rounded-xl overflow-hidden shadow-sm active:scale-95 transition-transform" onclick="speak('${f.jp}')"><img src="${f.img}" class="w-full h-24 object-cover"><div class="p-2 text-center font-bold text-gray-700 text-sm">${f.name}</div></div>`).join('')}</div></div></div>`;
             } else if(currentToolFilter === 'money') {
-                // [重點修復] 錢包頁面：解決 圖0390 和 圖0389 的問題
+                // [修復] 錢包頁面：解決破版問題
                 let totalSpent = expenses.reduce((a,b)=>a+b.price,0);
-                let budgetLeft = 100000 - totalSpent;
+                let budgetLeft = TOTAL_BUDGET - totalSpent;
                 let taxTotal = taxBasket.reduce((a,b)=>a+b,0);
                 
                 main.innerHTML = `
                 <div class="animate-slide-up space-y-4 tab-content">
                     <div class="glass-card rounded-3xl p-5 relative overflow-hidden bg-white">
-                        <div class="relative z-10">
-                            <div class="flex flex-col gap-1 mb-4">
-                                <div class="flex justify-between items-end"><span class="text-xs text-gray-500 font-bold">總預算</span><span class="text-xl font-black text-gray-800">¥100,000</span></div>
-                                <div class="w-full bg-gray-100 rounded-full h-2"><div class="bg-green-500 h-2 rounded-full" style="width:${Math.min((totalSpent/100000)*100,100)}%"></div></div>
-                                <div class="flex justify-between items-start mt-1"><span class="text-xs text-gray-500">已花費 ¥${totalSpent}</span><span class="text-sm font-bold ${budgetLeft<0?'text-red-500':'text-green-500'}">剩餘 ¥${budgetLeft}</span></div>
-                            </div>
-                            <div class="grid grid-cols-2 gap-3">
-                                <button onclick="openQuickExpense()" class="bg-blue-600 text-white py-3 rounded-xl font-bold shadow-lg active:scale-95">記一筆</button>
-                                <div class="bg-blue-50 p-2 rounded-xl border border-blue-100 flex flex-col items-center justify-center">
-                                    <div class="text-[10px] text-gray-500">匯率 (0.215)</div>
-                                    <div class="text-xs font-bold text-blue-600">≈ NT$ <span id="twdOut">0</span></div>
-                                </div>
+                        <div class="flex flex-col gap-2 mb-4">
+                            <div class="flex justify-between items-end"><span class="text-xs text-gray-500 font-bold">總預算</span><span class="text-xl font-black text-gray-800">¥${TOTAL_BUDGET.toLocaleString()}</span></div>
+                            <div class="w-full bg-gray-100 rounded-full h-2"><div class="bg-green-500 h-2 rounded-full" style="width:${Math.min((totalSpent/TOTAL_BUDGET)*100,100)}%"></div></div>
+                            <div class="flex flex-col items-end mt-1"><span class="text-xs text-gray-500">已花費 ¥${totalSpent.toLocaleString()}</span><span class="text-sm font-bold ${budgetLeft<0?'text-red-500':'text-green-500'}">剩餘 ¥${budgetLeft.toLocaleString()}</span></div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <button onclick="openQuickExpense()" class="bg-blue-600 text-white py-3 rounded-xl font-bold shadow-lg active:scale-95">記一筆</button>
+                            <div class="bg-blue-50 p-2 rounded-xl border border-blue-100 flex flex-col items-center justify-center">
+                                <div class="text-[10px] text-gray-500">匯率 (${CURRENT_RATE})</div>
+                                <div class="text-xs font-bold text-blue-600">≈ NT$ <span id="twdOut">0</span></div>
                             </div>
                         </div>
                     </div>
@@ -391,26 +566,29 @@
                     </div>
                     
                     <div class="glass-card rounded-3xl p-4">
-                        <div class="text-xs font-bold text-gray-400 mb-2">最近消費</div>
+                        <div class="flex justify-between items-center mb-2"><div class="text-xs font-bold text-gray-400">最近消費</div><button onclick="backupData()" class="text-[10px] bg-gray-200 px-2 py-1 rounded">備份</button></div>
                         ${expenses.slice(0,5).map(e=>`<div class="flex justify-between border-b border-slate-50 py-2"><span class="font-bold text-gray-700">${e.name}</span><span>¥${e.price}</span></div>`).join('')}
                     </div>
                 </div>`;
             } else if(currentToolFilter === 'fun') {
-                // 娛樂 (尋寶/變聲/AR)
                 main.innerHTML = `<div class="animate-slide-up space-y-4 tab-content"><div class="bg-yellow-50 border-2 border-yellow-200 rounded-3xl p-5 cursor-pointer" onclick="document.getElementById('hunt-modal').classList.add('open');document.getElementById('hunt-grid').innerHTML=huntDB.map(i=>'<div class=\\'bg-white p-4 rounded-xl text-center shadow-sm\\'><div class=\\'text-3xl\\'>'+i.icon+'</div><div class=\\'font-bold\\'>'+i.name+'</div></div>').join('')"><h3 class="text-xl font-black text-yellow-800 mb-1">尋寶獵人</h3><p class="text-sm text-yellow-700">車上不無聊！</p></div><div class="grid grid-cols-2 gap-4"><button onclick="document.getElementById('voice-modal').classList.add('open')" class="bg-green-500 text-white p-5 rounded-3xl font-bold text-lg shadow-lg">恐龍變聲</button><button onclick="document.getElementById('ar-modal').classList.add('open')" class="bg-indigo-600 text-white p-5 rounded-3xl font-bold text-lg shadow-lg">AR 召喚</button><button onclick="document.getElementById('ruler-modal').classList.add('open')" class="bg-white border text-blue-600 p-5 rounded-3xl font-bold text-lg">尺規</button><button onclick="document.getElementById('drawing-modal').classList.add('open')" class="bg-white border text-purple-600 p-5 rounded-3xl font-bold text-lg">畫畫</button></div></div>`;
+            } else if (currentToolFilter === 'safe') {
+                main.innerHTML = `<div class="animate-slide-up space-y-4 tab-content"><button onclick="document.getElementById('dr-dino-modal').classList.add('open');document.getElementById('symptom-grid').innerHTML=symptomDB.map(s=>'<div class=\\'bg-red-50 p-4 rounded-xl text-center\\'><div class=\\'text-3xl\\'>'+s.icon+'</div><div class=\\'font-bold\\'>'+s.label+'</div><div class=\\'text-xs text-red-400\\'>'+s.jp+'</div></div>').join('')" class="w-full bg-white border-2 border-red-100 rounded-3xl p-5 flex items-center gap-4"><div class="text-3xl">👨‍⚕️</div><div class="text-left font-black text-red-600">Dr. Dino 痛痛翻譯</div></button><button onclick="document.getElementById('sos-card-modal').classList.add('open')" class="w-full bg-red-600 text-white rounded-3xl p-6 shadow-xl border-4 border-red-500 flex items-center justify-between"><div class="text-left font-black text-2xl">緊急求助卡</div><i class="fas fa-exclamation-circle text-4xl"></i></button><div class="space-y-2">${toolsDB.sos.map(s => `<a href="tel:${s.tel}" class="${s.style} p-4 rounded-2xl block text-center font-bold shadow-md flex justify-between px-6"><span>${s.name}</span><span>${s.tel}</span></a>`).join('')}</div></div>`;
             }
         }
     }
 
-    // 6. 輔助函式庫 (Helpers)
+    // 6. 輔助函式庫 (Helpers & V17 Restored Functions)
     window.openSpotModal = (id) => { const s=spotInfoDB[id]; if(!s)return; document.getElementById('spot-title').innerText=s.title; document.getElementById('spot-hero').style.backgroundImage=`url('${s.image}')`; document.getElementById('spot-desc').innerText=s.desc; document.getElementById('spot-tips').innerText=s.tips; document.getElementById('spot-nav-btn').href=`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(s.title)}`; document.getElementById('spot-modal').classList.add('open'); }
     window.copyMapCode = (c) => navigator.clipboard.writeText(c).then(()=>{const t=document.getElementById('toast');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000)});
     window.updateHUD = () => { const d=itineraryDB[currentDayIdx]; document.getElementById('hud-title').innerText=d.events[0]?.title||""; const e=d.events.find(x=>x.mapcode); document.getElementById('hud-mapcode').innerText=e?e.mapcode:"--- ---"; }
     window.toggleRainMode = () => { isRainyMode=!isRainyMode; localStorage.setItem('rainy_mode',isRainyMode); document.body.classList.toggle('rainy-mode'); }
     window.speak = (t) => { const u=new SpeechSynthesisUtterance(t); u.lang='ja-JP'; window.speechSynthesis.speak(u); }
     window.spinGasha = () => { gashaCoinsUsed++; localStorage.setItem('gasha_coins_used',gashaCoinsUsed); renderContent(); document.getElementById('gasha-modal').classList.add('open'); }
+    window.quickSearch = (q) => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`, '_blank');
+    window.goBackHotel = () => { const h = currentDayIdx <= 4 ? "Best Western Okinawa Kouki Beach" : "Daiwa Roynet Hotel Naha Kokusai-dori"; window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(h)}`, '_blank'); }
     
-    // 快速記帳功能
+    // 快速記帳
     window.openQuickExpense = () => document.getElementById('expense-modal').classList.add('open');
     window.closeQuickExpense = () => document.getElementById('expense-modal').classList.remove('open');
     window.saveQuickExpense = () => { 
@@ -421,12 +599,62 @@
             expenses.unshift({name:n, price:parseInt(p), cat:c}); 
             localStorage.setItem('trip_expenses', JSON.stringify(expenses)); 
             closeQuickExpense(); 
-            // 如果在錢包頁面，立即更新
             if(activeTab==='tools' && currentToolFilter==='money') renderContent();
         } 
     }
+    
+    // [V17 復活] 停車照片功能
+    window.saveParking = () => { 
+        const n = prompt("位置備註 (如 B1):"); 
+        if(n) { 
+            // 簡化版: 不呼叫相機以免複雜，直接存文字，如需照片可擴充
+            parkingData = {note: n, time: new Date().toTimeString().slice(0,5), photo: null}; 
+            localStorage.setItem('parking_data', JSON.stringify(parkingData)); 
+            renderContent(); 
+        }
+    }
 
-    // 啟動應用程式
+    // [V17 復活] 備份功能
+    window.backupData = () => {
+        const data = { expenses, giftDB, huntProgress, missions: {} };
+        missionsDB.forEach(m => data.missions[m.id] = localStorage.getItem(m.id));
+        const str = btoa(encodeURIComponent(JSON.stringify(data)));
+        navigator.clipboard.writeText(str).then(() => alert("備份代碼已複製！"));
+    }
+
+    // [V17 復活] 每日檢查
+    function checkDailyPopup() {
+        const today = new Date().toISOString().split('T')[0];
+        const last = localStorage.getItem('last_daily_check');
+        // 假設每天 08:00 - 10:00 跳出
+        const h = new Date().getHours();
+        if(today !== last && h >= 8 && h <= 10) {
+            // 這裡可以呼叫 document.getElementById('daily-check-modal').classList.add('open');
+            // 但為了不打擾操作，先不自動彈出，可手動加入
+        }
+    }
+    
+    // [V17 復活] 地理圍欄 (Geofence)
+    function checkGeofence(lat, lon) {
+        missionsDB.forEach(m => {
+            if(m.lat && localStorage.getItem(m.id) !== '1') {
+                const d = getDist(lat, lon, m.lat, m.lon);
+                if(d < 0.5) { // 500m
+                    const t = document.getElementById('geo-toast');
+                    t.querySelector('#geo-msg').innerText = `接近任務點：${m.title}`;
+                    t.classList.add('show');
+                    setTimeout(()=>t.classList.remove('show'), 5000);
+                }
+            }
+        });
+    }
+    function getDist(lat1,lon1,lat2,lon2) {
+        const R = 6371; const dLat = (lat2-lat1)*Math.PI/180; const dLon = (lon2-lon1)*Math.PI/180;
+        const a = Math.sin(dLat/2)*Math.sin(dLat/2) + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)*Math.sin(dLon/2);
+        return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    }
+
+    // 啟動
     init();
     </script>
 </body>
