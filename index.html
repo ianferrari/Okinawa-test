@@ -1183,7 +1183,7 @@
                         const isRainyItem = isRainyMode && e.rainy;
                         const current = isRainyItem ? { ...e, ...e.rainy } : e;
                         const badge = isRainyItem ? `<span class="absolute top-2 right-2 bg-blue-500 text-white text-[9px] px-2 py-0.5 rounded-full"><i class="fas fa-umbrella mr-1"></i>雨天備案</span>` : "";
-                        const mapLink = current.map ? `http://maps.google.com/?q=${encodeURIComponent(current.map)}` : null;
+                        const mapLink = current.map ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(current.map)}` : null;
                         const shareBtn = `<button onclick="shareEvent('${current.title}', '${current.mapcode || ''}', '${current.note || ''}')" class="glass px-3 py-1.5 rounded-full text-xs text-green-600 font-bold border border-green-100 active:bg-green-50"><i class="fas fa-share-nodes mr-1"></i>分享</button>`;
                         const isLast = idx === d.events.length - 1;
                         const travelHtml = (current.travel && !isLast) ? `<div class="travel-pill">${current.travel}</div>` : '';
@@ -1803,7 +1803,7 @@
     window.deleteGift = (idx) => { if(confirm("刪除此項目？")) { giftDB.splice(idx, 1); saveGifts(); renderGiftList(); } }
     function saveGifts() { localStorage.setItem('trip_gifts', JSON.stringify(giftDB)); }
     // --- 彈窗與分享 (Modals & Share) ---
-    window.openSpotModal = (id) => { const spot = spotInfoDB[id]; if(!spot) return; document.getElementById('spot-title').innerText = spot.title; document.getElementById('spot-hero').style.backgroundImage = `url('${spot.image}')`; document.getElementById('spot-desc').innerText = spot.desc; document.getElementById('spot-tips').innerText = spot.tips; const tagsHtml = spot.tags.map(t => `<span class="bg-black/40 px-2 py-1 rounded text-[10px] backdrop-blur-md font-bold text-white shadow-sm border border-white/20">${t}</span>`).join(''); document.getElementById('spot-tags').innerHTML = tagsHtml; const btn = document.getElementById('spot-nav-btn'); btn.href = `http://maps.google.com/?q=${encodeURIComponent(spot.map)}`; document.getElementById('spot-modal').classList.add('open'); }
+    window.openSpotModal = (id) => { const spot = spotInfoDB[id]; if(!spot) return; document.getElementById('spot-title').innerText = spot.title; document.getElementById('spot-hero').style.backgroundImage = `url('${spot.image}')`; document.getElementById('spot-desc').innerText = spot.desc; document.getElementById('spot-tips').innerText = spot.tips; const tagsHtml = spot.tags.map(t => `<span class="bg-black/40 px-2 py-1 rounded text-[10px] backdrop-blur-md font-bold text-white shadow-sm border border-white/20">${t}</span>`).join(''); document.getElementById('spot-tags').innerHTML = tagsHtml; const btn = document.getElementById('spot-nav-btn'); btn.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(spot.map)}`; document.getElementById('spot-modal').classList.add('open'); }
     window.closeSpotModal = () => document.getElementById('spot-modal').classList.remove('open');
     
     window.openSosCard = () => document.getElementById('sos-card-modal').classList.add('open');
@@ -1854,7 +1854,7 @@
     window.saveQuickExpense = () => { const n=document.getElementById('quickExName').value; const p=document.getElementById('quickExPrice').value; const c=document.querySelector('input[name="quick-cat"]:checked')?.value||'shopping'; if(!n||!p){showToast("請輸入完整");return;} expenses.unshift({name:n,price:parseInt(p),cat:c}); localStorage.setItem('trip_expenses',JSON.stringify(expenses)); showToast("快速記帳成功"); if(activeTab==='tools'&&currentToolFilter==='calc')renderContent(); closeQuickExpense(); }
     window.exportExpenses = () => { if(expenses.length===0)return; let t=0; let txt="🦕 帳務：\n"; expenses.forEach(e=>{txt+=`${e.name}: ¥${e.price}\n`;t+=e.price;}); txt+=`總計: ¥${t}`; navigator.clipboard.writeText(txt).then(()=>showToast("已複製")); }
     window.deleteExpense = (i) => { if(confirm("刪除？")){expenses.splice(i,1); localStorage.setItem('trip_expenses',JSON.stringify(expenses)); renderContent();} }
-    window.quickSearch = (q) => { window.open(`http://maps.google.com/?q=${encodeURIComponent(q)}`,'_blank'); showToast("搜尋中..."); }
+    window.quickSearch = (q) => { window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`,'_blank'); showToast("搜尋中..."); }
     // v18.4 升級: 聰明雙語發音 (自動偵測 中文/日文)
     window.speak = (t, b) => {
         // 1. 簡單偵測是否包含日文字元 (平假名/片假名)
