@@ -1441,9 +1441,9 @@
 
                     <div class="bg-white border-2 border-pink-100 rounded-3xl p-5" id="custom-speech-area">
                         <h3 class="text-sm font-black text-pink-600 mb-3"><i class="fas fa-star mr-1"></i> 自訂 / 常用語句</h3>
-                        <div class="flex gap-2 mb-3">
-                            <input type="text" id="custom-speech-input" placeholder="輸入想說的話 (如: 蘋果汁)" class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm">
-                            <button onclick="addCustomSpeech()" class="bg-pink-500 text-white px-4 rounded-xl font-bold text-xs">加入</button>
+                        <div class="flex items-center gap-2 mb-3">
+                            <input type="text" id="custom-speech-input" placeholder="輸入想說的話 (如: 蘋果汁)" class="flex-1 min-w-0 bg-slate-50 border border-slate-200 rounded-xl px-3 py-3 text-sm focus:outline-pink-500">
+                            <button onclick="addCustomSpeech()" class="bg-pink-500 text-white px-4 py-3 rounded-xl font-bold text-xs flex-shrink-0 whitespace-nowrap shadow-md active:scale-95 transition-transform">加入</button>
                         </div>
                         <div class="space-y-2" id="custom-speech-list">
                             ${customSpeechDB.length > 0 ? customSpeechHTML : '<div class="text-center text-xs text-gray-400 py-2">還沒有自訂語句</div>'}
@@ -1902,15 +1902,48 @@
     window.exportExpenses = () => { if(expenses.length===0)return; let t=0; let txt="🦕 帳務：\n"; expenses.forEach(e=>{txt+=`${e.name}: ¥${e.price}\n`;t+=e.price;}); txt+=`總計: ¥${t}`; navigator.clipboard.writeText(txt).then(()=>showToast("已複製")); }
     window.deleteExpense = (i) => { if(confirm("刪除？")){expenses.splice(i,1); localStorage.setItem('trip_expenses',JSON.stringify(expenses)); renderContent();} }
     window.quickSearch = (q) => { window.open(`http://maps.google.com/?q=${encodeURIComponent(q)}`,'_blank'); showToast("搜尋中..."); }
-    // v17.0: 點餐語音使用 speak() 函式，支援日語
-    window.speak = (t,b) => { 
-        if(b && b.querySelector) { // 如果是按鈕元素
-            const o=b.innerHTML; b.innerHTML=`<div class="playing-wave"><span></span><span></span><span></span></div>`; 
-            const reset = () => b.innerHTML = o;
-            if('speechSynthesis' in window){const u=new SpeechSynthesisUtterance(t);u.lang='ja-JP';u.rate=0.9;u.onend=reset;u.onerror=()=>{reset();window.open(`https://translate.google.com/?sl=ja&tl=zh-TW&text=${encodeURIComponent(t)}&op=translate`,'_blank');};window.speechSynthesis.speak(u);}else{reset();window.open(`https://translate.google.com/?sl=ja&tl=zh-TW&text=${encodeURIComponent(t)}&op=translate`,'_blank');}
+    // v18.4 升級: 聰明雙語發音 (自動偵測 中文/日文)
+    window.speak = (t, b) => {
+        // 1. 簡單偵測是否包含日文字元 (平假名/片假名)
+        const hasJapanese = /[\u3040-\u30ff]/.test(t);
+        // 2. 決定語言: 有日文就唸日文，不然就唸中文
+        const lang = hasJapanese ? 'ja-JP' : 'zh-TW';
+
+        // 動畫處理 (如果是按鈕觸發)
+        let originalContent = '';
+        if (b && b.querySelector) {
+            originalContent = b.innerHTML;
+            // 顯示播放中的波浪動畫
+            b.innerHTML = `<div class="playing-wave"><span></span><span></span><span></span></div>`;
+        }
+
+        const resetBtn = () => {
+            if (b && b.querySelector) b.innerHTML = originalContent;
+        };
+
+        if ('speechSynthesis' in window) {
+            // 先停止正在說的話
+            window.speechSynthesis.cancel();
+
+            const u = new SpeechSynthesisUtterance(t);
+            u.lang = lang; 
+            u.rate = 0.9; // 稍微慢一點點比較清楚
+            u.onend = resetBtn;
+            
+            // 錯誤處理 (例如沒網路或不支援該語言)
+            u.onerror = (e) => {
+                console.error("Speech Error", e);
+                resetBtn();
+                // 如果是日文發音失敗，才開啟 Google 翻譯當備案
+                if(lang === 'ja-JP') {
+                    window.open(`https://translate.google.com/?sl=ja&tl=zh-TW&text=${encodeURIComponent(t)}&op=translate`, '_blank');
+                }
+            };
+            
+            window.speechSynthesis.speak(u);
         } else {
-            // 純文字觸發
-             if('speechSynthesis' in window){const u=new SpeechSynthesisUtterance(t);u.lang='ja-JP';window.speechSynthesis.speak(u);}
+            resetBtn();
+            alert("你的瀏覽器不支援語音功能 😢");
         }
     }
     window.toggleEditMedical = () => { document.getElementById('medical-view').classList.toggle('hidden'); document.getElementById('medical-edit').classList.toggle('hidden'); }
