@@ -1062,17 +1062,21 @@
                     "flex-1 py-2 rounded-xl text-xs font-bold transition-all text-white/80";
             });
         } else if (activeTab === 'tools') {
-            ['calc', 'drive', 'food', 'signs', 'coins', 'sizes', 'jp', 'orders', 'sos', 'sync'].forEach(t => { // v17.0 加入 food
+            // v18.2 修正：更新為四大分類的 ID (money, drive, food, gadget)
+            ['money', 'drive', 'food', 'gadget'].forEach(t => { 
                 const btn = document.getElementById(`btn-tool-${t}`);
                 if (btn) {
                     let c = "bg-white text-blue-600";
-                    if (t === 'calc') c = "bg-white text-yellow-600";
-                    if (t === 'sos') c = "bg-white text-red-600";
-                    if (t === 'sync') c = "bg-white text-purple-600";
-                    if (t === 'food') c = "bg-white text-orange-600"; // v17.0
+                    // 定義每個按鈕被選中時的顏色
+                    if (t === 'money') c = "bg-white text-pink-600 shadow-sm";
+                    if (t === 'drive') c = "bg-white text-blue-600 shadow-sm";
+                    if (t === 'food') c = "bg-white text-orange-600 shadow-sm";
+                    if (t === 'gadget') c = "bg-white text-purple-600 shadow-sm";
+                    
+                    // 判斷是否為當前選中的工具，給予對應樣式
                     btn.className = currentToolFilter === t ?
-                        `flex-shrink-0 px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${c} shadow-sm` :
-                        "flex-shrink-0 px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all text-white/80";
+                        `flex-1 py-2 rounded-xl text-xs font-bold transition-all ${c}` :
+                        "flex-1 py-2 rounded-xl text-xs font-bold transition-all text-white/80";
                 }
             });
         }
@@ -1333,37 +1337,70 @@
             
             // --- 1. 消費高手 (Money) ---
             if (currentToolFilter === 'money') {
-                // 1-1. 計算記帳數據
-                let totalJPY = 0; const catTotals = {}; 
-                expenses.forEach(e => { totalJPY += e.price; const cat = e.cat || 'other'; if (!catTotals[cat]) catTotals[cat] = 0; catTotals[cat] += e.price; }); 
-                let totalTWD = Math.round(totalJPY * CURRENT_RATE); 
-                let budgetLeft = TOTAL_BUDGET - totalTWD;
-                let budgetPercent = Math.min((totalTWD / TOTAL_BUDGET) * 100, 100); 
-                let taxBasketTotal = taxBasket.reduce((a, b) => a + b, 0);
+                // 確保變數都有初始值，避免報錯
+                let totalJPY = 0; 
+                const catTotals = {}; 
+                
+                // 計算總花費
+                if(expenses && expenses.length > 0) {
+                    expenses.forEach(e => { 
+                        totalJPY += e.price; 
+                        const cat = e.cat || 'other'; 
+                        if (!catTotals[cat]) catTotals[cat] = 0; 
+                        catTotals[cat] += e.price; 
+                    }); 
+                }
+
+                // 計算匯率與預算
+                let curRate = typeof CURRENT_RATE !== 'undefined' ? CURRENT_RATE : 0.21;
+                let totalBudget = typeof TOTAL_BUDGET !== 'undefined' ? TOTAL_BUDGET : 100000;
+                let totalTWD = Math.round(totalJPY * curRate); 
+                let budgetLeft = totalBudget - totalTWD;
+                let budgetPercent = Math.min((totalTWD / totalBudget) * 100, 100); 
+                
+                // 免稅計算
+                let currentTaxBasket = typeof taxBasket !== 'undefined' ? taxBasket : [];
+                let taxBasketTotal = currentTaxBasket.reduce((a, b) => a + b, 0);
                 let taxDiff = 5500 - taxBasketTotal; 
                 let taxMsg = taxDiff > 0 ? `還差 ¥${taxDiff.toLocaleString()}` : "🎉 免稅達成！";
-                let taxBasketItems = taxBasket.map((price) => `<span class="bg-blue-100 text-blue-700 px-2 py-1 rounded-md text-[10px] font-bold">¥${price}</span>`).join(" "); 
+                let taxPercent = Math.min((taxBasketTotal / 5500) * 100, 100);
+                let taxBasketItems = currentTaxBasket.map((price) => `<span class="bg-blue-100 text-blue-700 px-2 py-1 rounded-md text-[10px] font-bold">¥${price}</span>`).join(" "); 
+                
+                // 圓餅圖邏輯
                 let gradientStr = "conic-gradient(#e2e8f0 0deg 360deg)";
                 let legendHTML = `<div class="text-center w-full text-xs text-gray-400 mt-2">尚無資料</div>`; 
+                
                 if (totalJPY > 0) { 
                     const sortedCats = Object.keys(catTotals).sort((a,b) => catTotals[b] - catTotals[a]);
-                    const gradients = []; let currentDeg = 0; legendHTML = "";
+                    const gradients = []; 
+                    let currentDeg = 0; 
+                    legendHTML = "";
                     sortedCats.forEach(c => { 
-                        const percent = catTotals[c] / totalJPY; const deg = percent * 360; const color = expenseCats[c] ? expenseCats[c].color : '#999'; 
-                        gradients.push(`${color} ${currentDeg}deg ${currentDeg + deg}deg`); currentDeg += deg; 
+                        const percent = catTotals[c] / totalJPY; 
+                        const deg = percent * 360; 
+                        const color = expenseCats[c] ? expenseCats[c].color : '#999'; 
+                        gradients.push(`${color} ${currentDeg}deg ${currentDeg + deg}deg`); 
+                        currentDeg += deg; 
                         legendHTML += `<div class="flex items-center gap-1 text-[10px] w-1/3 mb-1"><div class="w-2 h-2 rounded-full" style="background:${color}"></div><span class="opacity-70">${expenseCats[c].name} ${Math.round(percent*100)}%</span></div>`; 
                     }); 
                     gradientStr = `conic-gradient(${gradients.join(', ')})`;
                 } 
-                let expenseListHTML = expenses.length === 0 ? `<div class="text-center py-8 text-gray-400 text-sm">🛍️ 還沒買東西...</div>` : expenses.map((item, idx) => { const cat = item.cat || 'other'; const catInfo = expenseCats[cat] || expenseCats.other; return `<div class="flex justify-between items-center bg-white p-3 rounded-xl border border-slate-100 shadow-sm mb-2"><div class="flex-1 flex items-center gap-3"><div class="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs" style="background:${catInfo.color}"><i class="fas ${catInfo.icon}"></i></div><div><div class="font-bold text-gray-700">${item.name}</div><div class="text-xs text-gray-400">¥${item.price.toLocaleString()}</div></div></div><button onclick="deleteExpense(${idx})" class="w-8 h-8 rounded-full bg-red-50 text-red-500 flex items-center justify-center active:scale-90"><i class="fas fa-trash-alt text-xs"></i></button></div>`; }).join('');
 
-                // 1-2. 組合 HTML (匯率 + 免稅 + 預算 + 記帳 + 硬幣 + 尺寸)
+                // 記帳列表 HTML
+                let expenseListHTML = (expenses && expenses.length > 0) ? 
+                    expenses.map((item, idx) => { 
+                        const cat = item.cat || 'other'; 
+                        const catInfo = expenseCats[cat] || expenseCats.other; 
+                        return `<div class="flex justify-between items-center bg-white p-3 rounded-xl border border-slate-100 shadow-sm mb-2"><div class="flex-1 flex items-center gap-3"><div class="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs" style="background:${catInfo.color}"><i class="fas ${catInfo.icon}"></i></div><div><div class="font-bold text-gray-700">${item.name}</div><div class="text-xs text-gray-400">¥${item.price.toLocaleString()}</div></div></div><button onclick="deleteExpense(${idx})" class="w-8 h-8 rounded-full bg-red-50 text-red-500 flex items-center justify-center active:scale-90"><i class="fas fa-trash-alt text-xs"></i></button></div>`; 
+                    }).join('') : `<div class="text-center py-8 text-gray-400 text-sm">🛍️ 還沒買東西...</div>`;
+
+                // 組合最終 HTML
                 main.innerHTML = `
                 <div class="animate-slide-up space-y-4">
                     <div class="glass-card rounded-3xl p-6 text-center shadow-lg border-2 border-yellow-300 relative">
                         <button onclick="fetchExchangeRate()" id="fetchRateBtn" class="absolute top-4 right-4 bg-yellow-100 text-yellow-700 p-2 rounded-full text-xs shadow-sm active:scale-90 transition-transform"><i class="fas fa-sync-alt"></i></button>
                         <h3 class="text-xs font-bold text-yellow-600 mb-2 uppercase tracking-wider">匯率換算器</h3>
-                        <div class="text-xl font-bold text-gray-500 mb-4 flex items-center justify-center gap-2">1 JPY = <input type="number" id="rateInput" value="${CURRENT_RATE}" onchange="updateRate(this.value)" class="text-yellow-600 text-3xl font-black bg-transparent focus:outline-none focus:border-b-2 focus:border-yellow-500 transition-colors" step="0.0001"> TWD</div>
+                        <div class="text-xl font-bold text-gray-500 mb-4 flex items-center justify-center gap-2">1 JPY = <input type="number" id="rateInput" value="${curRate}" onchange="updateRate(this.value)" class="text-yellow-600 text-3xl font-black bg-transparent focus:outline-none focus:border-b-2 focus:border-yellow-500 transition-colors" step="0.0001"> TWD</div>
                         <div class="flex flex-col gap-4">
                             <div class="bg-blue-50 p-4 rounded-xl border border-blue-100 relative"><label class="block text-sm font-medium text-gray-600 mb-1">日幣 (JPY)</label><input type="number" id="jpyInput" oninput="convertCurrency()" placeholder="輸入日幣金額" class="w-full text-3xl text-gray-800 bg-transparent focus:outline-none text-center p-2 font-black"></div>
                             <i class="fas fa-arrow-down text-3xl text-blue-500 animate-bounce absolute left-1/2 -translate-x-1/2 top-[52%] z-10 drop-shadow-sm"></i>
@@ -1378,7 +1415,7 @@
                     </div>
 
                     <div class="glass-card rounded-3xl p-4">
-                        <div class="flex justify-between items-center mb-2"><div class="text-xs font-bold text-gray-500">總預算: $${TOTAL_BUDGET.toLocaleString()}</div><div class="text-xs font-bold ${budgetLeft < 0 ? 'text-red-500' : 'text-green-500'}">剩餘: $${budgetLeft.toLocaleString()}</div></div>
+                        <div class="flex justify-between items-center mb-2"><div class="text-xs font-bold text-gray-500">總預算: $${totalBudget.toLocaleString()}</div><div class="text-xs font-bold ${budgetLeft < 0 ? 'text-red-500' : 'text-green-500'}">剩餘: $${budgetLeft.toLocaleString()}</div></div>
                         <div class="w-full bg-gray-200 rounded-full h-1.5 mb-4"><div class="bg-green-500 h-1.5 rounded-full transition-all duration-500" style="width: ${budgetPercent}%"></div></div>
                         <div class="pie-chart" style="background: ${gradientStr}"></div><div class="flex flex-wrap justify-center mt-3 px-2">${legendHTML}</div>
                     </div>
